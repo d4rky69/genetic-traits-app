@@ -102,3 +102,6 @@ show_trait_summary("Dimples", "Dimples")
 show_trait_summary("Earlobe", "Earlobe")
 show_trait_summary("Tongue Roll", "Tongue Roll")
 show_trait_summary("Right Handed", "Handedness")
+st.markdown("---")
+st.markdown("👨‍💻 Created by **Shreyas Sahoo**")
+
