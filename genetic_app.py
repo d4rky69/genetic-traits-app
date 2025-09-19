@@ -65,7 +65,7 @@ if search_name:
         st.warning("No match found.")
 
 # ------------------------------
-# Filter by Trait (Updated with Row Highlight)
+# Filter by Trait (Updated with Color-Coded Row Highlight)
 # ------------------------------
 st.subheader("🎯 Filter by Trait")
 trait = st.selectbox("Choose a trait to filter:", ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Right Handed"])
@@ -73,10 +73,21 @@ value = st.selectbox("Choose value:", df[trait].unique())
 
 st.write(f"Showing individuals with **{trait} = {value}**:")
 
-# Highlight rows that match the selected trait
+# Color mapping for each trait (suitable for dark background)
+trait_colors = {
+    "Eye Colour": "#FF5733",      # bright orange
+    "Dimples": "#33FF57",         # bright green
+    "Earlobe": "#3357FF",         # bright blue
+    "Tongue Roll": "#FF33FF",     # bright magenta
+    "Right Handed": "#FFFF33"     # bright yellow
+}
+
+highlight_color = trait_colors.get(trait, "#FFD699")  # fallback color
+
+# Highlight rows for the selected trait
 def highlight_row(row):
     if row[trait] == value:
-        return ['background-color: #ffd699']*len(row)
+        return [f'background-color: {highlight_color}; color: black; font-weight: bold']*len(row)
     else:
         return ['']*len(row)
 
@@ -120,4 +131,5 @@ show_trait_summary("Dimples", "Dimples")
 show_trait_summary("Earlobe", "Earlobe")
 show_trait_summary("Tongue Roll", "Tongue Roll")
 show_trait_summary("Right Handed", "Handedness")
+
 
