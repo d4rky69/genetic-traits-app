@@ -39,6 +39,13 @@ df = pd.DataFrame(data, columns=fields)
 # ------------------------------
 st.set_page_config(page_title="Genetic Traits Database", layout="wide")
 
+# Top Header / Logo with Creator Name
+st.markdown("""
+<div style="display: flex; align-items: center; justify-content: space-between; padding: 10px 0;">
+    <h2 style="margin:0; color:#4CAF50;">👨‍💻 Shreyas Sahoo</h2>
+</div>
+""", unsafe_allow_html=True)
+
 st.title("🧬 Genetic Traits Database")
 st.write("Interactive dataset of 35 individuals with genetic traits.")
 
@@ -57,16 +64,27 @@ if search_name:
     else:
         st.warning("No match found.")
 
-# Filter by Trait
+# ------------------------------
+# Filter by Trait (Updated with Row Highlight)
+# ------------------------------
 st.subheader("🎯 Filter by Trait")
 trait = st.selectbox("Choose a trait to filter:", ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Right Handed"])
 value = st.selectbox("Choose value:", df[trait].unique())
 
-filtered = df[df[trait] == value]
 st.write(f"Showing individuals with **{trait} = {value}**:")
-st.dataframe(filtered, use_container_width=True)
 
+# Highlight rows that match the selected trait
+def highlight_row(row):
+    if row[trait] == value:
+        return ['background-color: #ffd699']*len(row)
+    else:
+        return ['']*len(row)
+
+st.dataframe(df.style.apply(highlight_row, axis=1), use_container_width=True, height=300)
+
+# ------------------------------
 # Summary Section
+# ------------------------------
 st.subheader("📊 Trait Summary & Visualizations")
 
 def show_trait_summary(column, title):
@@ -102,6 +120,4 @@ show_trait_summary("Dimples", "Dimples")
 show_trait_summary("Earlobe", "Earlobe")
 show_trait_summary("Tongue Roll", "Tongue Roll")
 show_trait_summary("Right Handed", "Handedness")
-st.markdown("---")
-st.markdown("👨‍💻 Created by **Shreyas Sahoo**")
 
