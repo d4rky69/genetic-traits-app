@@ -1,9 +1,40 @@
 import streamlit as st
 
 def load_css():
-    """Loads the app's custom CSS for the futuristic glassmorphism theme and aligns all dashboard text."""
     st.markdown("""
     <style>
+    /* Animated name footer at top */
+    #custom-footer {
+        width: 100vw;
+        position: relative;
+        top: 0;
+        left: 0;
+        padding: 0.6rem 0;
+        z-index: 1000;
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        background: linear-gradient(90deg, #6A11CB 0%, #2575FC 100%);
+        color: #fff;
+        box-shadow: 0 2px 24px 0 rgba(37,117,252,0.23);
+        animation: slideDown 1.1s cubic-bezier(.68,-0.55,.27,1.55);
+        border-bottom-left-radius: 18px;
+        border-bottom-right-radius: 18px;
+    }
+    @keyframes slideDown {
+        0% { transform: translateY(-60px); opacity: 0;}
+        60% { transform: translateY(8px); opacity: .7;}
+        100% { transform: translateY(0); opacity: 1;}
+    }
+    #custom-footer span {
+        background: linear-gradient(90deg, #ff5f6d 0%, #ffc371 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* ... rest of your CSS ... */
     /* Aurora animation */
     @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -207,5 +238,4 @@ def add_pdf_export():
         </div>
         {pdf_generation_script}
     """
-    # Place the button in the main page, not the sidebar
     st.markdown(download_button_html, unsafe_allow_html=True)
