@@ -13,55 +13,28 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-/* Metric card styling */
 [data-testid="stMetric"] {
-    background-color: #1E1E2D;
-    border: 1px solid #4A4A6A;
-    border-radius: 12px;
-    padding: 25px;
-    box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2);
-    transition: all 0.3s ease-in-out;
+    background-color: #1E1E2D; border: 1px solid #4A4A6A; border-radius: 12px;
+    padding: 25px; box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out;
 }
 [data-testid="stMetric"]:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px 0 rgba(37, 117, 252, 0.4);
-    border: 1px solid #2575FC;
+    transform: scale(1.05); box-shadow: 0 6px 20px 0 rgba(37, 117, 252, 0.4); border: 1px solid #2575FC;
 }
-/* Profile Card Styling */
 .profile-card {
-    background: linear-gradient(135deg, #1E1E2D 0%, #2C2C4D 100%);
-    padding: 2rem;
-    border-radius: 15px;
-    border: 1px solid #4A4A6A;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    text-align: center;
-    transition: all 0.3s ease-in-out;
+    background: linear-gradient(135deg, #1E1E2D 0%, #2C2C4D 100%); padding: 2rem;
+    border-radius: 15px; border: 1px solid #4A4A6A; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    text-align: center; transition: all 0.3s ease-in-out;
 }
 .profile-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(106, 17, 203, 0.5);
+    transform: translateY(-5px); box-shadow: 0 8px 25px rgba(106, 17, 203, 0.5);
 }
-.profile-name {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #FFFFFF;
-    margin-bottom: 1rem;
-}
+.profile-name { font-size: 2rem; font-weight: 600; color: #FFFFFF; margin-bottom: 1rem; }
 .trait-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    color: #D1D1E0;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem; color: #D1D1E0;
 }
-.trait-item {
-    background-color: #2C2C4D;
-    padding: 1rem;
-    border-radius: 10px;
-}
-.trait-label {
-    font-weight: 600;
-    color: #2575FC;
-}
+.trait-item { background-color: #2C2C4D; padding: 1rem; border-radius: 10px; }
+.trait-label { font-weight: 600; color: #2575FC; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -86,7 +59,7 @@ uploaded_file = st.sidebar.file_uploader("📂 Upload your own CSV data", type="
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
     if not REQUIRED_COLS.issubset(df.columns):
-        st.error(f"Error: The uploaded CSV must contain the following columns: {', '.join(REQUIRED_COLS)}")
+        st.error(f"Error: The uploaded CSV must contain these columns: {', '.join(REQUIRED_COLS)}")
         st.stop()
     if 'S.No' not in df.columns:
         df.insert(0, 'S.No', range(1, 1 + len(df)))
@@ -118,7 +91,6 @@ with col2: st.metric("Right-Handed", f"{right_handed_percentage:.1f}%")
 with col3: st.metric("Have Dimples", f"{dimples_percentage:.1f}%")
 
 st.markdown("<br>", unsafe_allow_html=True)
-
 st.markdown("### 👤 Personal Trait Profile")
 person_name = st.selectbox("Select an individual to view their profile:", df['Name'].unique())
 if person_name:
@@ -138,7 +110,6 @@ if person_name:
     """, unsafe_allow_html=True)
 
 st.markdown("---")
-
 tab1, tab2, tab3 = st.tabs(["🗃️ Dataset Explorer", "📈 Trait Analysis", "🔥 Correlation Analysis"])
 
 with tab1:
@@ -166,7 +137,7 @@ with tab2:
                 st.plotly_chart(fig_pie, use_container_width=True)
 with tab3:
     st.header("Correlation Heatmap")
-    st.markdown("This heatmap shows the relationship between different traits. A value close to **1** (light color) means the traits are positively correlated. A value close to **-1** (dark color) means they are negatively correlated. Values near **0** show little to no relationship.")
+    st.markdown("Shows the relationship between traits. Values near 1 or -1 show a strong correlation.")
     df_corr = df.drop(columns=['S.No', 'Name']).copy()
     for col in df_corr.columns:
         if df_corr[col].dtype == 'object':
@@ -174,7 +145,6 @@ with tab3:
     corr = df_corr.corr()
     fig_heatmap = px.imshow(corr, text_auto=True, aspect="auto", color_continuous_scale='RdBu_r', title="Feature Correlation Heatmap")
     st.plotly_chart(fig_heatmap, use_container_width=True)
-    st.warning("Note: As this is random data, the correlations are coincidental and do not reflect real biological relationships.", icon="⚠️")
 
 st.markdown("---")
 st.markdown("<div style='text-align:center; color:grey;'>👨‍💻 Created by Shreyas Sahoo</div>", unsafe_allow_html=True)
