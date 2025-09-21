@@ -11,45 +11,79 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# --- NEW: Glassmorphism & Aurora Background CSS ---
 st.markdown("""
 <style>
-[data-testid="stMetric"] {
-    background-color: #1E1E2D; border: 1px solid #4A4A6A; border-radius: 12px;
-    padding: 25px; box-shadow: 0 4px 15px 0 rgba(0, 0, 0, 0.2); transition: all 0.3s ease-in-out;
+/* --- Keyframes for Aurora Background --- */
+@keyframes aurora {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
-[data-testid="stMetric"]:hover {
-    transform: scale(1.05); box-shadow: 0 6px 20px 0 rgba(37, 117, 252, 0.4); border: 1px solid #2575FC;
+
+/* --- Keyframes for Fade-In Animation --- */
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
-.profile-card {
-    background: linear-gradient(135deg, #1E1E2D 0%, #2C2C4D 100%); padding: 2rem;
-    border-radius: 15px; border: 1px solid #4A4A6A; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    text-align: center; transition: all 0.3s ease-in-out;
+
+/* --- Main App Styling --- */
+.stApp {
+    background: linear-gradient(125deg, #0D0520, #241A4D, #0D0520);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
 }
+
+/* --- Glassmorphism Effect for Cards and Sidebar --- */
+[data-testid="stMetric"],
+[data-testid="stSidebar"],
+.profile-card,
+.stTabs,
+[data-testid="stExpander"] {
+    background: rgba(255, 255, 255, 0.05); /* Semi-transparent background */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* --- Hover Animations --- */
+[data-testid="stMetric"]:hover,
 .profile-card:hover {
-    transform: translateY(-5px); box-shadow: 0 8px 25px rgba(106, 17, 203, 0.5);
+    transform: scale(1.03);
+    box-shadow: 0 12px 40px 0 rgba(37, 117, 252, 0.5);
+    border: 1px solid rgba(37, 117, 252, 0.8);
 }
+/* Staggered animation for metric cards */
+[data-testid="stMetric"]:nth-of-type(1) { animation-delay: 0.1s; }
+[data-testid="stMetric"]:nth-of-type(2) { animation-delay: 0.2s; }
+[data-testid="stMetric"]:nth-of-type(3) { animation-delay: 0.3s; }
+
+/* --- Profile Card Specifics --- */
+.profile-card { animation-delay: 0.4s; }
 .profile-name { font-size: 2rem; font-weight: 600; color: #FFFFFF; margin-bottom: 1rem; }
 .trait-grid {
     display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem; color: #D1D1E0;
 }
-.trait-item { background-color: #2C2C4D; padding: 1rem; border-radius: 10px; }
-.trait-label { font-weight: 600; color: #2575FC; }
+.trait-item { background-color: rgba(0, 0, 0, 0.2); padding: 1rem; border-radius: 10px; }
+.trait-label { font-weight: 600; color: #69b3f2; }
+
+/* --- General Text & Title Styling --- */
+h1, h2, h3 {
+    color: #FFFFFF;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
+# --- DATA LOADING LOGIC (Remains the same) ---
 @st.cache_data
 def generate_demo_data():
-    names = [
-        "Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya",
-        "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja",
-        "Varun", "Neha", "Shreya", "Manish", "Akash", "Vikram", "Sunita", "Lakshmi", "Ramesh",
-        "Deepak", "Geeta", "Ajay", "Suresh", "Anjali", "Swati"
-    ]
-    data = [[i, name, random.randint(18, 25), random.choice(["Brown", "Black"]), random.choice(["Yes", "No"]),
-             random.choice(["Free", "Attached"]), random.choice(["Yes", "No"]),
-             random.choices(["Right", "Left", "Mixed"], weights=[0.89, 0.10, 0.01])[0]]
-            for i, name in enumerate(names, 1)]
+    names = ["Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja", "Varun", "Neha", "Shreya", "Manish", "Akash", "Vikram", "Sunita", "Lakshmi", "Ramesh", "Deepak", "Geeta", "Ajay", "Suresh", "Anjali", "Swati"]
+    data = [[i, name, random.randint(18, 25), random.choice(["Brown", "Black"]), random.choice(["Yes", "No"]), random.choice(["Free", "Attached"]), random.choice(["Yes", "No"]), random.choices(["Right", "Left", "Mixed"], weights=[0.89, 0.10, 0.01])[0]] for i, name in enumerate(names, 1)]
     fields = ["S.No", "Name", "Age", "Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     return pd.DataFrame(data, columns=fields)
 
@@ -66,6 +100,7 @@ if uploaded_file is not None:
 else:
     df = generate_demo_data()
 
+# --- SIDEBAR (Remains the same) ---
 with st.sidebar:
     st.header("🔬 Filter & Display Controls")
     trait_options = ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
@@ -78,6 +113,7 @@ with st.sidebar:
     st.download_button("Download Data as CSV", csv, "genetic_traits_data.csv", "text/csv")
     add_pdf_export()
 
+# --- MAIN PAGE (Content remains the same, but will adopt the new style) ---
 st.title("🧬 Genetic Traits Dashboard")
 st.markdown("An interactive dashboard to explore, visualize, and predict genetic traits.")
 
