@@ -161,6 +161,11 @@ def load_css():
         padding-left: 1.2em !important;
         padding-right: 1.2em !important;
     }
+
+    /* Align main headers (h2) under Streamlit tabs */
+    .stMarkdown h2, .stMarkdown h1, .stMarkdown h3, .stHeader {
+        margin-left: 16px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
