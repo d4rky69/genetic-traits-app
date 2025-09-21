@@ -162,19 +162,15 @@ def load_css():
         padding-right: 1.2em !important;
     }
 
-    /* Align main headers (h2) under Streamlit tabs */
-    .stMarkdown h2, .stMarkdown h1, .stMarkdown h3, .stHeader {
-        margin-left: 16px !important;
-    }
     /* Robust header alignment under tabs */
-h1, h2, h3 {
-    margin-left: 24px !important;
-}
-[data-testid="stMarkdownContainer"] h1,
-[data-testid="stMarkdownContainer"] h2,
-[data-testid="stMarkdownContainer"] h3 {
-    margin-left: 24px !important;
-}
+    h1, h2, h3 {
+        margin-left: 24px !important;
+    }
+    [data-testid="stMarkdownContainer"] h1,
+    [data-testid="stMarkdownContainer"] h2,
+    [data-testid="stMarkdownContainer"] h3 {
+        margin-left: 24px !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -196,7 +192,7 @@ def add_pdf_export():
             setTimeout(() => {
                 const pdfButton = document.getElementById('export-pdf-button');
                 if (pdfButton) { pdfButton.addEventListener('click', exportPageToPDF); }
-            }, 1500);
+            }, 3000); // Increased delay for reliability
         </script>
     """
     download_button_html = f"""
@@ -211,4 +207,5 @@ def add_pdf_export():
         </div>
         {pdf_generation_script}
     """
-    st.sidebar.markdown(download_button_html, unsafe_allow_html=True)
+    # Place the button in the main page, not the sidebar
+    st.markdown(download_button_html, unsafe_allow_html=True)
