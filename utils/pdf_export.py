@@ -5,7 +5,6 @@ def add_pdf_export():
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
         <script>
-            // This function is now attached via an event listener
             function exportPageToPDF() {
                 const element = document.querySelector('[data-testid="stAppViewContainer"]');
                 html2canvas(element, {
@@ -14,7 +13,7 @@ def add_pdf_export():
                     }
                 }).then(canvas => {
                     const imgData = canvas.toDataURL('image/png');
-                    const pdf = new window.jspdf.jsPDF({ // Using window.jspdf to be explicit
+                    const pdf = new window.jspdf.jsPDF({
                         orientation: 'portrait',
                         unit: 'px',
                         format: [canvas.width, canvas.height]
@@ -23,9 +22,6 @@ def add_pdf_export():
                     pdf.save("genetic-traits-dashboard.pdf");
                 });
             }
-
-            // --- MODIFIED PART ---
-            // Attaching the function to the button using an event listener
             document.addEventListener('DOMContentLoaded', function() {
                 const pdfButton = document.getElementById('export-pdf-button');
                 if (pdfButton) {
@@ -34,23 +30,13 @@ def add_pdf_export():
             });
         </script>
     """
-
     download_button_html = f"""
         <div style="text-align: center; padding-top: 1rem;">
-            {/* --- MODIFIED PART: Added an id to the button --- */}
             <button id="export-pdf-button" style="
                 background: linear-gradient(90deg, #6A11CB 0%, #2575FC 100%);
-                color: white;
-                border: none;
-                padding: 12px 24px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                font-weight: bold;
-                margin: 4px 2px;
-                cursor: pointer;
-                border-radius: 12px;
+                color: white; border: none; padding: 12px 24px; text-align: center;
+                text-decoration: none; display: inline-block; font-size: 16px;
+                font-weight: bold; margin: 4px 2px; cursor: pointer; border-radius: 12px;
                 transition: all 0.3s ease-in-out;
             ">
                 Download Page as PDF
@@ -58,5 +44,4 @@ def add_pdf_export():
         </div>
         {pdf_generation_script}
     """
-    
     st.sidebar.markdown(download_button_html, unsafe_allow_html=True)
