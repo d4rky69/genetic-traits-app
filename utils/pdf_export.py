@@ -166,6 +166,15 @@ def load_css():
     .stMarkdown h2, .stMarkdown h1, .stMarkdown h3, .stHeader {
         margin-left: 16px !important;
     }
+    /* Robust header alignment under tabs */
+h1, h2, h3 {
+    margin-left: 24px !important;
+}
+[data-testid="stMarkdownContainer"] h1,
+[data-testid="stMarkdownContainer"] h2,
+[data-testid="stMarkdownContainer"] h3 {
+    margin-left: 24px !important;
+}
     </style>
     """, unsafe_allow_html=True)
 
