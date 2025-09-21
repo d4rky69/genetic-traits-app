@@ -6,7 +6,6 @@ import plotly.express as px
 # ------------------------------
 # Page Configuration
 # ------------------------------
-# Use st.set_page_config() as the first Streamlit command.
 st.set_page_config(
     page_title="Genetic Traits Dashboard",
     page_icon="🧬",
@@ -15,7 +14,41 @@ st.set_page_config(
 )
 
 # ------------------------------
-# Data Generation (Cached for performance)
+# Custom CSS for UI Enhancement
+# ------------------------------
+def load_css():
+    """Function to load and inject custom CSS."""
+    with open('style.css') as f:
+        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
+
+# You would create a style.css file with the content below
+# For this example, I'm embedding it directly.
+st.markdown("""
+<style>
+    /* Style for metric cards */
+    [data-testid="stMetric"] {
+        background-color: #262730;
+        border: 1px solid #3A3A4E;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+        transition: 0.3s;
+    }
+    [data-testid="stMetric"]:hover {
+        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    }
+    /* Center-align the footer */
+    .footer {
+        text-align: center;
+        color: grey;
+        padding-top: 2rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
+# ------------------------------
+# Data Generation (Cached)
 # ------------------------------
 @st.cache_data
 def generate_data():
@@ -31,14 +64,9 @@ def generate_data():
     data = []
     for i, name in enumerate(names, 1):
         data.append([
-            i,
-            name,
-            random.randint(18, 25),
-            random.choice(["Brown", "Black"]),
-            random.choice(["Yes", "No"]),
-            random.choice(["Free", "Attached"]),
-            random.choice(["Yes", "No"]),
-            random.choices(["Yes", "No"], weights=[0.9, 0.1])[0]
+            i, name, random.randint(18, 25), random.choice(["Brown", "Black"]),
+            random.choice(["Yes", "No"]), random.choice(["Free", "Attached"]),
+            random.choice(["Yes", "No"]), random.choices(["Yes", "No"], weights=[0.9, 0.1])[0]
         ])
     
     fields = ["S.No", "Name", "Age", "Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Right Handed"]
@@ -51,27 +79,14 @@ df = generate_data()
 # ------------------------------
 with st.sidebar:
     st.header("🔬 Filter Controls")
-    
-    # Trait selection for filtering
     trait_options = ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Right Handed"]
-    selected_trait = st.selectbox(
-        "Choose a trait to filter by:",
-        trait_options
-    )
-    
-    # Value selection based on the chosen trait
+    selected_trait = st.selectbox("Choose a trait to filter by:", trait_options)
     unique_values = df[selected_trait].unique()
-    selected_value = st.radio(
-        f"Select a value for {selected_trait}:",
-        unique_values,
-        horizontal=True
-    )
+    selected_value = st.radio(f"Select a value for {selected_trait}:", unique_values, horizontal=True)
 
 # ------------------------------
 # Main Page Content
 # ------------------------------
-
-# --- HEADER ---
 st.title("🧬 Genetic Traits Dashboard")
 st.markdown("An interactive dashboard to explore genetic traits across 35 individuals.")
 
@@ -97,72 +112,33 @@ tab1, tab2 = st.tabs(["🗃️ Dataset Explorer", "📈 Trait Analysis"])
 with tab1:
     st.header("Full Dataset with Live Filter")
     st.info(f"Highlighting individuals where **{selected_trait}** is **{selected_value}**.")
-
-    # Function to highlight rows based on selection
+    
     def highlight_rows(row):
         if row[selected_trait] == selected_value:
-            return ['background-color: #2E4C6D; color: white'] * len(row)
+            return ['background-color: #3A3A4E; color: white'] * len(row)
         return [''] * len(row)
 
-    # Display the styled DataFrame
-    st.dataframe(
-        df.style.apply(highlight_rows, axis=1),
-        use_container_width=True,
-        height=500
-    )
+    st.dataframe(df.style.apply(highlight_rows, axis=1), use_container_width=True, height=500)
 
 with tab2:
     st.header("Detailed Summary for Each Trait")
-    
-    # Loop through traits to create summary sections
     for trait in trait_options:
         with st.expander(f"🔬 Analysis for: **{trait}**"):
-            # --- Summary Table ---
             counts = df[trait].value_counts()
-            percentages = round((counts / len(df)) * 100, 2)
             summary_df = pd.DataFrame({
-                "Value": counts.index,
-                "Count": counts.values,
-                "Percentage (%)": percentages.values
+                "Value": counts.index, "Count": counts.values
             }).reset_index(drop=True)
             
             st.dataframe(summary_df, use_container_width=True, hide_index=True)
             
-            # --- Charts ---
             col_chart1, col_chart2 = st.columns(2)
-            
             with col_chart1:
-                # Bar Chart with Plotly
-                fig_bar = px.bar(
-                    summary_df,
-                    x="Value",
-                    y="Count",
-                    color="Value",
-                    title=f"Bar Chart: {trait} Distribution",
-                    labels={'Count': 'Number of Individuals', 'Value': trait}
-                )
+                fig_bar = px.bar(summary_df, x="Value", y="Count", color="Value", title=f"Bar Chart: {trait}")
                 st.plotly_chart(fig_bar, use_container_width=True)
-
             with col_chart2:
-                # Pie Chart with Plotly
-                fig_pie = px.pie(
-                    summary_df,
-                    names="Value",
-                    values="Count",
-                    title=f"Pie Chart: {trait} Proportions",
-                    hole=0.3 # Creates a donut chart effect
-                )
+                fig_pie = px.pie(summary_df, names="Value", values="Count", title=f"Pie Chart: {trait}", hole=0.3)
                 st.plotly_chart(fig_pie, use_container_width=True)
 
-# ------------------------------
-# Footer
-# ------------------------------
+# --- FOOTER ---
 st.markdown("---")
-st.markdown(
-    """
-    <p style='text-align: center; color: grey;'>
-        👨‍💻 Created by <b>Shreyas Sahoo</b>
-    </p>
-    """,
-    unsafe_allow_html=True
-)
+st.markdown("<div class='footer'>👨‍💻 Created by <b>Shreyas Sahoo</b></div>", unsafe_allow_html=True)
