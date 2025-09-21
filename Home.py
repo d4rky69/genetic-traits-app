@@ -16,13 +16,6 @@ st.set_page_config(
 # ------------------------------
 # Custom CSS for UI Enhancement
 # ------------------------------
-def load_css():
-    """Function to load and inject custom CSS."""
-    with open('style.css') as f:
-        st.markdown(f'<style>{f.read()}</style>', unsafe_allow_html=True)
-
-# You would create a style.css file with the content below
-# For this example, I'm embedding it directly.
 st.markdown("""
 <style>
     /* Style for metric cards */
@@ -66,10 +59,13 @@ def generate_data():
         data.append([
             i, name, random.randint(18, 25), random.choice(["Brown", "Black"]),
             random.choice(["Yes", "No"]), random.choice(["Free", "Attached"]),
-            random.choice(["Yes", "No"]), random.choices(["Yes", "No"], weights=[0.9, 0.1])[0]
+            random.choice(["Yes", "No"]),
+            # --- MODIFIED LINE: Updated handedness to be more realistic ---
+            random.choices(["Right", "Left", "Mixed"], weights=[0.89, 0.10, 0.01])[0]
         ])
     
-    fields = ["S.No", "Name", "Age", "Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Right Handed"]
+    # --- MODIFIED LINE: Changed column name from "Right Handed" ---
+    fields = ["S.No", "Name", "Age", "Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     return pd.DataFrame(data, columns=fields)
 
 df = generate_data()
@@ -79,7 +75,8 @@ df = generate_data()
 # ------------------------------
 with st.sidebar:
     st.header("🔬 Filter Controls")
-    trait_options = ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Right Handed"]
+    # --- MODIFIED LINE: Updated trait options list ---
+    trait_options = ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     selected_trait = st.selectbox("Choose a trait to filter by:", trait_options)
     unique_values = df[selected_trait].unique()
     selected_value = st.radio(f"Select a value for {selected_trait}:", unique_values, horizontal=True)
@@ -93,7 +90,8 @@ st.markdown("An interactive dashboard to explore genetic traits across 35 indivi
 # --- QUICK STATS ---
 st.markdown("### 📊 Quick Stats")
 total_individuals = len(df)
-right_handed_percentage = (df['Right Handed'].value_counts(normalize=True).get('Yes', 0)) * 100
+# --- MODIFIED LINE: Updated calculation for right-handedness percentage ---
+right_handed_percentage = (df['Handedness'].value_counts(normalize=True).get('Right', 0)) * 100
 dimples_percentage = (df['Dimples'].value_counts(normalize=True).get('Yes', 0)) * 100
 
 col1, col2, col3 = st.columns(3)
