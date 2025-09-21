@@ -2,8 +2,8 @@ import pandas as pd
 import random
 import streamlit as st
 import plotly.express as px
+from utils.pdf_export import add_pdf_export
 
-# (Keep the Page Config and CSS sections exactly as they were)
 st.set_page_config(
     page_title="Genetic Traits Dashboard",
     page_icon="🧬",
@@ -13,28 +13,15 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    /* Style for metric cards */
     [data-testid="stMetric"] {
-        background-color: #262730;
-        border: 1px solid #3A3A4E;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-        transition: 0.3s;
+        background-color: #262730; border: 1px solid #3A3A4E; border-radius: 10px;
+        padding: 20px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); transition: 0.3s;
     }
-    [data-testid="stMetric"]:hover {
-        box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
-    }
-    /* Center-align the footer */
-    .footer {
-        text-align: center;
-        color: grey;
-        padding-top: 2rem;
-    }
+    [data-testid="stMetric"]:hover { box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2); }
+    .footer { text-align: center; color: grey; padding-top: 2rem; }
 </style>
 """, unsafe_allow_html=True)
 
-# (The generate_data function remains the same)
 @st.cache_data
 def generate_data():
     names = [
@@ -57,43 +44,27 @@ def generate_data():
 
 df = generate_data()
 
-# ------------------------------
-# Sidebar
-# ------------------------------
 with st.sidebar:
     st.header("🔬 Filter Controls")
     trait_options = ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     selected_trait = st.selectbox("Choose a trait to filter by:", trait_options)
     unique_values = df[selected_trait].unique()
     selected_value = st.radio(f"Select a value for {selected_trait}:", unique_values, horizontal=True)
-
     st.markdown("---")
-    
-    # --- NEW FEATURE: CSV Download ---
-    st.header("📤 Export Data")
+    st.header("📤 Export Options")
     @st.cache_data
     def convert_df_to_csv(df):
         return df.to_csv(index=False).encode('utf-8')
-
     csv = convert_df_to_csv(df)
-    st.download_button(
-       label="Download data as CSV",
-       data=csv,
-       file_name='genetic_traits_data.csv',
-       mime='text/csv',
-    )
-    
-# ------------------------------
-# Main Page Content
-# ------------------------------
-# (Header and Quick Stats sections are the same)
+    st.download_button("Download data as CSV", csv, "genetic_traits_data.csv", "text/csv")
+    add_pdf_export()
+
 st.title("🧬 Genetic Traits Dashboard")
 st.markdown("An interactive dashboard to explore genetic traits across 35 individuals.")
 st.markdown("### 📊 Quick Stats")
 total_individuals = len(df)
 right_handed_percentage = (df['Handedness'].value_counts(normalize=True).get('Right', 0)) * 100
 dimples_percentage = (df['Dimples'].value_counts(normalize=True).get('Yes', 0)) * 100
-
 col1, col2, col3 = st.columns(3)
 with col1: st.metric("Total Individuals", f"{total_individuals}")
 with col2: st.metric("Right-Handed", f"{right_handed_percentage:.1f}%")
@@ -101,11 +72,9 @@ with col3: st.metric("Have Dimples", f"{dimples_percentage:.1f}%")
 
 st.markdown("---")
 
-# --- DATA & ANALYSIS TABS ---
-tab1, tab2 = st.tabs(["🗃️ Dataset Explorer", "📈 Trait Analysis"])
+tab1, tab2, tab3 = st.tabs(["🗃️ Dataset Explorer", "📈 Trait Analysis", "🔥 Correlation Analysis"])
 
 with tab1:
-    # (Dataset Explorer tab is the same)
     st.header("Full Dataset with Live Filter")
     st.info(f"Highlighting individuals where **{selected_trait}** is **{selected_value}**.")
     def highlight_rows(row):
@@ -116,12 +85,9 @@ with tab1:
 
 with tab2:
     st.header("Detailed Summary for Each Trait")
-    
-    # --- NEW FEATURE: Age Distribution Histogram ---
     with st.expander("🎂 Analysis for: Age"):
         fig_hist = px.histogram(df, x="Age", nbins=8, title="Age Distribution of Individuals")
         st.plotly_chart(fig_hist, use_container_width=True)
-
     for trait in trait_options:
         with st.expander(f"🔬 Analysis for: **{trait}**"):
             counts = df[trait].value_counts()
@@ -135,6 +101,17 @@ with tab2:
                 fig_pie = px.pie(summary_df, names="Value", values="Count", title=f"Pie Chart: {trait}", hole=0.3)
                 st.plotly_chart(fig_pie, use_container_width=True)
 
-# --- FOOTER ---
+with tab3:
+    st.header("Correlation Heatmap")
+    st.markdown("This heatmap shows the relationship between different traits. A value close to **1** (light color) means the traits are positively correlated (e.g., as one appears, the other tends to appear). A value close to **-1** (dark color) means they are negatively correlated. Values near **0** show little to no relationship.")
+    df_corr = df.drop(columns=['S.No', 'Name']).copy()
+    for col in df_corr.columns:
+        if df_corr[col].dtype == 'object':
+            df_corr[col] = df_corr[col].astype('category').cat.codes
+    corr = df_corr.corr()
+    fig_heatmap = px.imshow(corr, text_auto=True, aspect="auto", color_continuous_scale='RdBu_r', title="Feature Correlation Heatmap")
+    st.plotly_chart(fig_heatmap, use_container_width=True)
+    st.warning("Note: As this is random data, the correlations are coincidental and do not reflect real biological relationships.", icon="⚠️")
+
 st.markdown("---")
 st.markdown("<div class='footer'>👨‍💻 Created by <b>Shreyas Sahoo</b></div>", unsafe_allow_html=True)
