@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- NEW: Glassmorphism & Aurora Background CSS ---
+# --- CSS with the alignment fix ---
 st.markdown("""
 <style>
 /* --- Keyframes for Aurora Background --- */
@@ -20,35 +20,31 @@ st.markdown("""
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
 }
-
 /* --- Keyframes for Fade-In Animation --- */
 @keyframes fadeInUp {
     0% { opacity: 0; transform: translateY(20px); }
     100% { opacity: 1; transform: translateY(0); }
 }
-
 /* --- Main App Styling --- */
 .stApp {
     background: linear-gradient(125deg, #0D0520, #241A4D, #0D0520);
     background-size: 400% 400%;
     animation: aurora 15s ease infinite;
 }
-
 /* --- Glassmorphism Effect for Cards and Sidebar --- */
 [data-testid="stMetric"],
 [data-testid="stSidebar"],
 .profile-card,
 .stTabs,
 [data-testid="stExpander"] {
-    background: rgba(255, 255, 255, 0.05); /* Semi-transparent background */
+    background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.18);
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
     animation: fadeInUp 0.5s ease-out forwards;
 }
-
 /* --- Hover Animations --- */
 [data-testid="stMetric"]:hover,
 .profile-card:hover {
@@ -68,14 +64,22 @@ st.markdown("""
     display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem; color: #D1D1E0;
 }
-.trait-item { background-color: rgba(0, 0, 0, 0.2); padding: 1rem; border-radius: 10px; }
+.trait-item {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 10px;
+    /* --- THIS IS THE FIX --- */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* ----------------------- */
+}
 .trait-label { font-weight: 600; color: #69b3f2; }
 
 /* --- General Text & Title Styling --- */
 h1, h2, h3 {
     color: #FFFFFF;
 }
-
 </style>
 """, unsafe_allow_html=True)
 
