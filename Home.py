@@ -12,7 +12,6 @@ st.set_page_config(
 )
 
 # --- CSS with BUG FIX ---
-# The custom font import and global font-family rule were removed to fix the expander icon bug.
 st.markdown("""
 <style>
 /* Metric card styling */
