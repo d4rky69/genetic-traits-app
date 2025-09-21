@@ -1,42 +1,10 @@
 import streamlit as st
 
 def load_css():
-    """Loads the app's custom CSS for the futuristic glassmorphism theme."""
+    """Loads the app's custom CSS for the futuristic glassmorphism theme and aligns all dashboard text."""
     st.markdown("""
-    /* Streamlit DataFrame/Table Styling */
-[data-testid="stDataFrame"] .stTable, [data-testid="stDataFrame"] .stTable td, [data-testid="stDataFrame"] .stTable th {
-    vertical-align: middle !important;
-    text-align: left !important;
-    font-size: 1.08rem !important;
-    font-family: inherit !important;
-    color: #E0E0E0 !important;
-    font-weight: 500 !important;
-}
-
-/* Table header styling */
-[data-testid="stDataFrame"] .stTable th {
-    background: rgba(44,44,77,0.7) !important;
-    color: #FFFFFF !important;
-    font-size: 1.15rem !important;
-    font-weight: 700 !important;
-    border-bottom: 2px solid #2575FC !important;
-}
-
-/* Highlighted row styling (blue background from Pandas Styler) */
-[data-testid="stDataFrame"] .stTable tr[style*="background-color: #2575FC"] td {
-    background-color: #2575FC !important;
-    color: #FFFFFF !important;
-}
-
-/* Remove extra cell padding and spacing for a compact look */
-[data-testid="stDataFrame"] .stTable td, [data-testid="stDataFrame"] .stTable th {
-    padding-top: 0.7em !important;
-    padding-bottom: 0.7em !important;
-    padding-left: 1.2em !important;
-    padding-right: 1.2em !important;
-}
     <style>
-        /* Aurora animation */
+    /* Aurora animation */
     @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
 
@@ -62,8 +30,8 @@ def load_css():
         min-height: 110px;
         display: flex;
         flex-direction: column;
-        justify-content: flex-start; /* top-align */
-        align-items: flex-start;      /* left-align */
+        justify-content: flex-start;
+        align-items: flex-start;
         padding: 18px 24px;
         gap: 0.5em;
         box-sizing: border-box;
@@ -159,6 +127,39 @@ def load_css():
         font-weight: 700 !important;
         color: #FFFFFF !important;
         margin-bottom: 0.4em;
+    }
+
+    /* Streamlit DataFrame/Table Styling */
+    [data-testid="stDataFrame"] .stTable, 
+    [data-testid="stDataFrame"] .stTable td, 
+    [data-testid="stDataFrame"] .stTable th {
+        vertical-align: middle !important;
+        text-align: left !important;
+        font-size: 1.08rem !important;
+        font-family: inherit !important;
+        color: #E0E0E0 !important;
+        font-weight: 500 !important;
+    }
+    /* Table header styling */
+    [data-testid="stDataFrame"] .stTable th {
+        background: rgba(44,44,77,0.7) !important;
+        color: #FFFFFF !important;
+        font-size: 1.15rem !important;
+        font-weight: 700 !important;
+        border-bottom: 2px solid #2575FC !important;
+    }
+    /* Highlighted row styling (blue background from Pandas Styler) */
+    [data-testid="stDataFrame"] .stTable tr[style*="background-color: #2575FC"] td {
+        background-color: #2575FC !important;
+        color: #FFFFFF !important;
+    }
+    /* Remove extra cell padding and spacing for a compact look */
+    [data-testid="stDataFrame"] .stTable td, 
+    [data-testid="stDataFrame"] .stTable th {
+        padding-top: 0.7em !important;
+        padding-bottom: 0.7em !important;
+        padding-left: 1.2em !important;
+        padding-right: 1.2em !important;
     }
     </style>
     """, unsafe_allow_html=True)
