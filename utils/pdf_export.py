@@ -4,45 +4,40 @@ def load_css():
     """Loads the app's custom CSS for the futuristic glassmorphism theme."""
     st.markdown("""
     <style>
-    /* --- Keyframes for Aurora Background & Animations --- */
+    /* Keyframes for Aurora Background & Animations */
     @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
 
-    /* --- Main App Styling --- */
+    /* Main App Styling */
     .stApp {
         background: linear-gradient(125deg, #0D0520, #241A4D, #0D0520);
         background-size: 400% 400%;
         animation: aurora 15s ease infinite;
     }
 
-    /* --- Glassmorphism Effect for containers --- */
+    /* Glassmorphism Effect for containers */
     [data-testid="stMetric"], [data-testid="stSidebar"], .profile-card, .stTabs, [data-testid="stExpander"] {
-        background: rgba(44, 44, 77, 0.5) !important; /* Semi-transparent background */
+        background: rgba(44, 44, 77, 0.5) !important;
         backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px); /* For Safari */
+        -webkit-backdrop-filter: blur(10px);
         border-radius: 15px;
         border: 1px solid rgba(255, 255, 255, 0.18);
         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         animation: fadeInUp 0.5s ease-out forwards;
     }
 
-    /* --- Text Color Fixes --- */
+    /* Text Color Fixes */
     .stApp, [data-testid="stSidebar"] p, [data-testid="stSidebar"] label, .stMarkdown, [data-testid="stExpander"] p {
-        color: #E0E0E0; /* Light gray for readability */
+        color: #E0E0E0;
     }
     h1, h2, h3, h4, h5, h6 { color: #FFFFFF; }
+    [data-testid="stSelectbox"] label { color: white !important; }
 
-    /* --- Tab Styling Fixes --- */
-    .stTabs [data-baseweb="tab"] {
-        background-color: transparent;
-        color: #AAAAAA;
-    }
-    .stTabs [data-baseweb="tab"][aria-selected="true"] {
-        color: #FFFFFF;
-        border-bottom: 2px solid #2575FC;
-    }
+    /* Tab Styling Fixes */
+    .stTabs [data-baseweb="tab"] { background-color: transparent; color: #AAAAAA; }
+    .stTabs [data-baseweb="tab"][aria-selected="true"] { color: #FFFFFF; border-bottom: 2px solid #2575FC; }
 
-    /* --- Hover Animations --- */
+    /* Hover Animations */
     [data-testid="stMetric"]:hover, .profile-card:hover {
         transform: scale(1.03);
         box-shadow: 0 12px 40px 0 rgba(37, 117, 252, 0.5);
@@ -52,12 +47,16 @@ def load_css():
     [data-testid="stMetric"]:nth-of-type(2) { animation-delay: 0.2s; }
     [data-testid="stMetric"]:nth-of-type(3) { animation-delay: 0.3s; }
 
-    /* --- Profile Card --- */
+    /* Profile Card Centering Fix */
     .profile-card { animation-delay: 0.4s; }
     .profile-name { font-size: 2rem; font-weight: 600; color: #FFFFFF; margin-bottom: 1rem; }
     .trait-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; color: #D1D1E0; }
-    .trait-item { background-color: rgba(0, 0, 0, 0.2); padding: 1rem; border-radius: 10px; display: flex; justify-content: center; align-items: center; }
-    .trait-label { font-weight: 600; color: #69b3f2; padding-right: 8px; }
+    .trait-item {
+        background-color: rgba(0, 0, 0, 0.2); padding: 1rem; border-radius: 10px;
+        display: flex; justify-content: center; align-items: center; text-align: center;
+    }
+    .trait-label { font-weight: 600; color: #69b3f2; padding-right: 0.5rem; }
+    .trait-value { color: #FFFFFF; }
     </style>
     """, unsafe_allow_html=True)
 
