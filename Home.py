@@ -11,18 +11,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- NEW: Futuristic & Cozy CSS with Hover Animations ---
+# --- CSS with BUG FIX ---
+# The custom font import and global font-family rule were removed to fix the expander icon bug.
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
-html, body, [class*="st-"] {
-    font-family: 'Poppins', sans-serif;
-}
-/* Main background */
-.stApp {
-    background-color: #0E1117;
-}
 /* Metric card styling */
 [data-testid="stMetric"] {
     background-color: #1E1E2D;
@@ -75,10 +67,9 @@ html, body, [class*="st-"] {
 </style>
 """, unsafe_allow_html=True)
 
-# --- DATA LOADING LOGIC (with new Uploader) ---
+# --- DATA LOADING LOGIC ---
 @st.cache_data
 def generate_demo_data():
-    # (The data generation code is the same as before)
     names = [
         "Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya",
         "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja",
@@ -134,7 +125,7 @@ with col3: st.metric("Have Dimples", f"{dimples_percentage:.1f}%")
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# --- NEW: PERSONAL PROFILE CARD ---
+# --- PERSONAL PROFILE CARD ---
 st.markdown("### 👤 Personal Trait Profile")
 person_name = st.selectbox("Select an individual to view their profile:", df['Name'].unique())
 if person_name:
@@ -157,7 +148,7 @@ st.markdown("---")
 
 # --- TABS FOR ANALYSIS ---
 tab1, tab2, tab3 = st.tabs(["🗃️ Dataset Explorer", "📈 Trait Analysis", "🔥 Correlation Analysis"])
-# (All tab content remains the same as before)
+
 with tab1:
     st.header("Full Dataset")
     def highlight_rows(row):
@@ -167,13 +158,11 @@ with tab1:
     st.dataframe(df.style.apply(highlight_rows, axis=1), use_container_width=True, height=500)
 with tab2:
     st.header("Detailed Summary for Each Trait")
-    # (Age Histogram and Trait Expanders code remains the same)
     with st.expander("🎂 Analysis for: Age"):
         fig_hist = px.histogram(df, x="Age", nbins=8, title="Age Distribution of Individuals")
         st.plotly_chart(fig_hist, use_container_width=True)
     for trait in trait_options:
         with st.expander(f"🔬 Analysis for: **{trait}**"):
-            #... (charting code is the same)
             counts = df[trait].value_counts()
             summary_df = pd.DataFrame({"Value": counts.index, "Count": counts.values}).reset_index(drop=True)
             col_chart1, col_chart2 = st.columns(2)
@@ -185,7 +174,7 @@ with tab2:
                 st.plotly_chart(fig_pie, use_container_width=True)
 with tab3:
     st.header("Correlation Heatmap")
-    # (Correlation Heatmap code remains the same)
+    st.markdown("This heatmap shows the relationship between different traits. A value close to **1** (light color) means the traits are positively correlated. A value close to **-1** (dark color) means they are negatively correlated. Values near **0** show little to no relationship.")
     df_corr = df.drop(columns=['S.No', 'Name']).copy()
     for col in df_corr.columns:
         if df_corr[col].dtype == 'object':
@@ -193,6 +182,7 @@ with tab3:
     corr = df_corr.corr()
     fig_heatmap = px.imshow(corr, text_auto=True, aspect="auto", color_continuous_scale='RdBu_r', title="Feature Correlation Heatmap")
     st.plotly_chart(fig_heatmap, use_container_width=True)
+    st.warning("Note: As this is random data, the correlations are coincidental and do not reflect real biological relationships.", icon="⚠️")
 
 # --- FOOTER ---
 st.markdown("---")
