@@ -11,8 +11,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Load all custom CSS
 load_css()
 
+# --- DATA LOADING LOGIC ---
 @st.cache_data
 def generate_demo_data():
     names = ["Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja", "Varun", "Neha", "Shreya", "Manish", "Akash", "Vikram", "Sunita", "Lakshmi", "Ramesh", "Deepak", "Geeta", "Ajay", "Suresh", "Anjali", "Swati"]
@@ -36,6 +38,7 @@ if uploaded_file is not None:
 else:
     df = generate_demo_data()
 
+# --- SIDEBAR ---
 with st.sidebar:
     st.header("🔬 Filter & Display Controls")
     trait_options = ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
@@ -48,6 +51,7 @@ with st.sidebar:
     st.download_button("Download Data as CSV", csv, "genetic_traits_data.csv", "text/csv")
     add_pdf_export()
 
+# --- MAIN PAGE ---
 st.title("🧬 Genetic Traits Dashboard")
 st.markdown("An interactive dashboard to explore, visualize, and predict genetic traits.")
 
@@ -65,16 +69,17 @@ st.markdown("### 👤 Personal Trait Profile")
 person_name = st.selectbox("Select an individual to view their profile:", df['Name'].unique())
 if person_name:
     person_data = df[df['Name'] == person_name].iloc[0]
+    # --- HTML for the profile card with the improved structure ---
     st.markdown(f"""
     <div class="profile-card">
         <div class="profile-name">{person_data['Name']}</div>
         <div class="trait-grid">
-            <div class="trait-item"><span class="trait-label">Age:</span>{person_data['Age']}</div>
-            <div class="trait-item"><span class="trait-label">Eye Colour:</span>{person_data['Eye Colour']}</div>
-            <div class="trait-item"><span class="trait-label">Dimples:</span>{person_data['Dimples']}</div>
-            <div class="trait-item"><span class="trait-label">Earlobe:</span>{person_data['Earlobe']}</div>
-            <div class="trait-item"><span class="trait-label">Tongue Roll:</span>{person_data['Tongue Roll']}</div>
-            <div class="trait-item"><span class="trait-label">Handedness:</span>{person_data['Handedness']}</div>
+            <div class="trait-item"><span class="trait-label">Age:</span><span class="trait-value">{person_data['Age']}</span></div>
+            <div class="trait-item"><span class="trait-label">Eye Colour:</span><span class="trait-value">{person_data['Eye Colour']}</span></div>
+            <div class="trait-item"><span class="trait-label">Dimples:</span><span class="trait-value">{person_data['Dimples']}</span></div>
+            <div class="trait-item"><span class="trait-label">Earlobe:</span><span class="trait-value">{person_data['Earlobe']}</span></div>
+            <div class="trait-item"><span class="trait-label">Tongue Roll:</span><span class="trait-value">{person_data['Tongue Roll']}</span></div>
+            <div class="trait-item"><span class="trait-label">Handedness:</span><span class="trait-value">{person_data['Handedness']}</span></div>
         </div>
     </div>
     """, unsafe_allow_html=True)
