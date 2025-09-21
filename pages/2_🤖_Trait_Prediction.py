@@ -1,23 +1,18 @@
 import streamlit as st
 import pandas as pd
+import random
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score
 import graphviz
 from sklearn.tree import export_graphviz
+from utils.pdf_export import add_pdf_export
 
-# Set page configuration
 st.set_page_config(page_title="Trait Prediction", page_icon="🤖", layout="wide")
-
 st.title("🤖 Trait Prediction using a Machine Learning Model")
+st.markdown("This page showcases a predictive model built to guess a person's handedness based on their other genetic traits. This is a classic example of a **classification problem** in machine learning.")
 
-st.markdown("""
-This page showcases a predictive model built to guess a person's handedness based on their other genetic traits. This is a classic example of a **classification problem** in machine learning.
-""")
-
-# --- 1. Load and Prepare the Data ---
-# We use the same data generation function from the Home page
 @st.cache_data
 def generate_data():
     names = [
@@ -39,8 +34,6 @@ def generate_data():
     return pd.DataFrame(data, columns=fields)
 
 df = generate_data()
-
-# Prepare data for ML model
 df_ml = df.drop(columns=['S.No', 'Name'])
 encoders = {}
 for column in df_ml.select_dtypes(include=['object']).columns:
@@ -48,20 +41,16 @@ for column in df_ml.select_dtypes(include=['object']).columns:
     df_ml[column] = le.fit_transform(df_ml[column])
     encoders[column] = le
 
-# --- 2. Train the Model ---
 X = df_ml.drop('Handedness', axis=1)
 y = df_ml['Handedness']
 feature_names = X.columns.tolist()
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
-
 model = DecisionTreeClassifier(max_depth=4, random_state=42)
 model.fit(X_train, y_train)
 y_pred = model.predict(X_test)
 accuracy = accuracy_score(y_test, y_pred)
 
 st.markdown("---")
-
-# --- 3. Interactive Prediction Section ---
 st.header("🔮 Make a Prediction")
 st.write("Select the traits of an individual to predict their handedness.")
 
@@ -76,7 +65,6 @@ with col3:
     age = st.slider("Age:", 18, 25, 22)
 
 if st.button("Predict Handedness", type="primary"):
-    # Encode user input
     input_data = pd.DataFrame({
         'Age': [age],
         'Eye Colour': [encoders['Eye Colour'].transform([eye_colour])[0]],
@@ -84,34 +72,18 @@ if st.button("Predict Handedness", type="primary"):
         'Earlobe': [encoders['Earlobe'].transform([earlobe])[0]],
         'Tongue Roll': [encoders['Tongue Roll'].transform([tongue_roll])[0]]
     })
-    
-    # Make prediction
     prediction_encoded = model.predict(input_data)[0]
     prediction_decoded = encoders['Handedness'].inverse_transform([prediction_encoded])[0]
-
     st.success(f"**Predicted Handedness:** {prediction_decoded}")
 
 st.markdown("---")
-
-# --- 4. Model Explanation Section ---
 st.header("🧠 How the Model Works")
-st.info(f"We trained a **Decision Tree Classifier** on the dataset. It achieved an accuracy of **{accuracy:.2f}%** on the test data. This means it correctly predicted the handedness for {accuracy:.0%} of the individuals it hadn't seen before.", icon="💡")
-
+st.info(f"We trained a **Decision Tree Classifier** on the dataset. It achieved an accuracy of **{accuracy:.2f}%** on the test data.", icon="💡")
 st.subheader("Visualizing the Decision Tree")
-st.markdown("""
-The diagram below shows the 'questions' the model asks to make a prediction. It starts at the top (the root) and moves down based on the answers for a given individual, until it reaches a final decision (a leaf node).
-""")
+st.markdown("The diagram below shows the 'questions' the model asks to make a prediction. It moves down the tree based on an individual's traits until it reaches a final decision.")
 
-# Create the Graphviz visualization
-dot_data = export_graphviz(
-    model,
-    out_file=None,
-    feature_names=feature_names,
-    class_names=encoders['Handedness'].classes_,
-    filled=True,
-    rounded=True,
-    special_characters=True
-)
+dot_data = export_graphviz(model, out_file=None, feature_names=feature_names, class_names=encoders['Handedness'].classes_, filled=True, rounded=True, special_characters=True)
 st.graphviz_chart(dot_data)
 
 st.warning("Note: Since the dataset is small and randomly generated, the model's 'logic' might not reflect real-world biology, but it demonstrates the machine learning process effectively.", icon="⚠️")
+add_pdf_export()
