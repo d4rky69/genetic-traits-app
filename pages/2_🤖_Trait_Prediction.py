@@ -12,19 +12,10 @@ from utils.pdf_export import add_pdf_export
 st.set_page_config(page_title="Trait Prediction", page_icon="🤖", layout="wide")
 st.title("🤖 Trait Prediction using a Machine Learning Model")
 
-# --- DATA LOADING ---
 @st.cache_data
 def generate_demo_data():
-    names = [
-        "Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya",
-        "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja",
-        "Varun", "Neha", "Shreya", "Manish", "Akash", "Vikram", "Sunita", "Lakshmi", "Ramesh",
-        "Deepak", "Geeta", "Ajay", "Suresh", "Anjali", "Swati"
-    ]
-    data = [[i, name, random.randint(18, 25), random.choice(["Brown", "Black"]), random.choice(["Yes", "No"]),
-             random.choice(["Free", "Attached"]), random.choice(["Yes", "No"]),
-             random.choices(["Right", "Left", "Mixed"], weights=[0.89, 0.10, 0.01])[0]]
-            for i, name in enumerate(names, 1)]
+    names = ["Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja", "Varun", "Neha", "Shreya", "Manish", "Akash", "Vikram", "Sunita", "Lakshmi", "Ramesh", "Deepak", "Geeta", "Ajay", "Suresh", "Anjali", "Swati"]
+    data = [[i, name, random.randint(18, 25), random.choice(["Brown", "Black"]), random.choice(["Yes", "No"]), random.choice(["Free", "Attached"]), random.choice(["Yes", "No"]), random.choices(["Right", "Left", "Mixed"], weights=[0.89, 0.10, 0.01])[0]] for i, name in enumerate(names, 1)]
     fields = ["S.No", "Name", "Age", "Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     return pd.DataFrame(data, columns=fields)
 
@@ -35,14 +26,13 @@ if uploaded_file is not None:
     st.sidebar.success("Custom data loaded!")
     df = pd.read_csv(uploaded_file)
     if not REQUIRED_COLS.issubset(df.columns):
-        st.error(f"Error: The uploaded CSV must contain the following columns: {', '.join(REQUIRED_COLS)}")
+        st.error(f"Error: The uploaded CSV must contain these columns: {', '.join(REQUIRED_COLS)}")
         st.stop()
 else:
     st.sidebar.info("Using demo data. Upload a CSV to analyze your own!")
     df = generate_demo_data()
 
-# --- MODEL TRAINING ---
-st.markdown("This model trains on the currently loaded data (either the demo set or your uploaded file) to predict handedness.")
+st.markdown("This model trains on the currently loaded data to predict handedness.")
 df_ml = df.drop(columns=['S.No', 'Name'])
 encoders = {}
 for column in df_ml.select_dtypes(include=['object']).columns:
@@ -62,7 +52,6 @@ if len(df) > 10:
 else:
     accuracy = "N/A (Dataset too small)"
 
-# --- INTERACTIVE PREDICTION ---
 st.markdown("---")
 st.header("🔮 Make a Prediction")
 col1, col2, col3 = st.columns(3)
@@ -76,18 +65,11 @@ with col3:
     age = st.slider("Age:", int(df['Age'].min()), int(df['Age'].max()), int(df['Age'].mean()))
 
 if st.button("Predict Handedness", type="primary"):
-    input_data = pd.DataFrame({
-        'Age': [age],
-        'Eye Colour': [encoders['Eye Colour'].transform([eye_colour])[0]],
-        'Dimples': [encoders['Dimples'].transform([dimples])[0]],
-        'Earlobe': [encoders['Earlobe'].transform([earlobe])[0]],
-        'Tongue Roll': [encoders['Tongue Roll'].transform([tongue_roll])[0]]
-    })
+    input_data = pd.DataFrame({'Age': [age], 'Eye Colour': [encoders['Eye Colour'].transform([eye_colour])[0]], 'Dimples': [encoders['Dimples'].transform([dimples])[0]], 'Earlobe': [encoders['Earlobe'].transform([earlobe])[0]], 'Tongue Roll': [encoders['Tongue Roll'].transform([tongue_roll])[0]]})
     prediction_encoded = model.predict(input_data)[0]
     prediction_decoded = encoders['Handedness'].inverse_transform([prediction_encoded])[0]
     st.success(f"**Predicted Handedness:** {prediction_decoded}")
 
-# --- MODEL EXPLANATION ---
 st.markdown("---")
 st.header("🧠 How the Model Works")
 if isinstance(accuracy, float):
@@ -98,5 +80,4 @@ else:
 st.subheader("Visualizing the Decision Tree")
 dot_data = export_graphviz(model, out_file=None, feature_names=feature_names, class_names=encoders['Handedness'].classes_, filled=True, rounded=True, special_characters=True)
 st.graphviz_chart(dot_data)
-
 add_pdf_export()
