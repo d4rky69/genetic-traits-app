@@ -3,9 +3,7 @@ import random
 import streamlit as st
 import plotly.express as px
 
-# ------------------------------
-# Page Configuration
-# ------------------------------
+# (Keep the Page Config and CSS sections exactly as they were)
 st.set_page_config(
     page_title="Genetic Traits Dashboard",
     page_icon="🧬",
@@ -13,9 +11,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ------------------------------
-# Custom CSS for UI Enhancement
-# ------------------------------
 st.markdown("""
 <style>
     /* Style for metric cards */
@@ -39,14 +34,9 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-# ------------------------------
-# Data Generation (Cached)
-# ------------------------------
+# (The generate_data function remains the same)
 @st.cache_data
 def generate_data():
-    """Generates and returns a DataFrame with random genetic trait data."""
-    # --- MODIFIED: Replaced two names ---
     names = [
         "Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal",
         "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya",
@@ -54,7 +44,6 @@ def generate_data():
         "Akash", "Vikram", "Sunita", "Lakshmi", "Ramesh", "Deepak", "Geeta", "Ajay",
         "Suresh", "Anjali", "Swati"
     ]
-    
     data = []
     for i, name in enumerate(names, 1):
         data.append([
@@ -63,14 +52,13 @@ def generate_data():
             random.choice(["Yes", "No"]),
             random.choices(["Right", "Left", "Mixed"], weights=[0.89, 0.10, 0.01])[0]
         ])
-    
     fields = ["S.No", "Name", "Age", "Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     return pd.DataFrame(data, columns=fields)
 
 df = generate_data()
 
 # ------------------------------
-# Sidebar for Controls
+# Sidebar
 # ------------------------------
 with st.sidebar:
     st.header("🔬 Filter Controls")
@@ -79,25 +67,37 @@ with st.sidebar:
     unique_values = df[selected_trait].unique()
     selected_value = st.radio(f"Select a value for {selected_trait}:", unique_values, horizontal=True)
 
+    st.markdown("---")
+    
+    # --- NEW FEATURE: CSV Download ---
+    st.header("📤 Export Data")
+    @st.cache_data
+    def convert_df_to_csv(df):
+        return df.to_csv(index=False).encode('utf-8')
+
+    csv = convert_df_to_csv(df)
+    st.download_button(
+       label="Download data as CSV",
+       data=csv,
+       file_name='genetic_traits_data.csv',
+       mime='text/csv',
+    )
+    
 # ------------------------------
 # Main Page Content
 # ------------------------------
+# (Header and Quick Stats sections are the same)
 st.title("🧬 Genetic Traits Dashboard")
 st.markdown("An interactive dashboard to explore genetic traits across 35 individuals.")
-
-# --- QUICK STATS ---
 st.markdown("### 📊 Quick Stats")
 total_individuals = len(df)
 right_handed_percentage = (df['Handedness'].value_counts(normalize=True).get('Right', 0)) * 100
 dimples_percentage = (df['Dimples'].value_counts(normalize=True).get('Yes', 0)) * 100
 
 col1, col2, col3 = st.columns(3)
-with col1:
-    st.metric("Total Individuals", f"{total_individuals}")
-with col2:
-    st.metric("Right-Handed", f"{right_handed_percentage:.1f}%")
-with col3:
-    st.metric("Have Dimples", f"{dimples_percentage:.1f}%")
+with col1: st.metric("Total Individuals", f"{total_individuals}")
+with col2: st.metric("Right-Handed", f"{right_handed_percentage:.1f}%")
+with col3: st.metric("Have Dimples", f"{dimples_percentage:.1f}%")
 
 st.markdown("---")
 
@@ -105,27 +105,28 @@ st.markdown("---")
 tab1, tab2 = st.tabs(["🗃️ Dataset Explorer", "📈 Trait Analysis"])
 
 with tab1:
+    # (Dataset Explorer tab is the same)
     st.header("Full Dataset with Live Filter")
     st.info(f"Highlighting individuals where **{selected_trait}** is **{selected_value}**.")
-    
     def highlight_rows(row):
         if row[selected_trait] == selected_value:
             return ['background-color: #3A3A4E; color: white'] * len(row)
         return [''] * len(row)
-
     st.dataframe(df.style.apply(highlight_rows, axis=1), use_container_width=True, height=500)
 
 with tab2:
     st.header("Detailed Summary for Each Trait")
+    
+    # --- NEW FEATURE: Age Distribution Histogram ---
+    with st.expander("🎂 Analysis for: Age"):
+        fig_hist = px.histogram(df, x="Age", nbins=8, title="Age Distribution of Individuals")
+        st.plotly_chart(fig_hist, use_container_width=True)
+
     for trait in trait_options:
         with st.expander(f"🔬 Analysis for: **{trait}**"):
             counts = df[trait].value_counts()
-            summary_df = pd.DataFrame({
-                "Value": counts.index, "Count": counts.values
-            }).reset_index(drop=True)
-            
+            summary_df = pd.DataFrame({"Value": counts.index, "Count": counts.values}).reset_index(drop=True)
             st.dataframe(summary_df, use_container_width=True, hide_index=True)
-            
             col_chart1, col_chart2 = st.columns(2)
             with col_chart1:
                 fig_bar = px.bar(summary_df, x="Value", y="Count", color="Value", title=f"Bar Chart: {trait}")
