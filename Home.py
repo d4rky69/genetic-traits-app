@@ -46,8 +46,9 @@ st.markdown("""
 @st.cache_data
 def generate_data():
     """Generates and returns a DataFrame with random genetic trait data."""
+    # --- MODIFIED: Replaced two names ---
     names = [
-        "Aarav", "Vihaan", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal",
+        "Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal",
         "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya",
         "Rahul", "Amit", "Sneha", "Pooja", "Varun", "Neha", "Shreya", "Manish",
         "Akash", "Vikram", "Sunita", "Lakshmi", "Ramesh", "Deepak", "Geeta", "Ajay",
@@ -60,11 +61,9 @@ def generate_data():
             i, name, random.randint(18, 25), random.choice(["Brown", "Black"]),
             random.choice(["Yes", "No"]), random.choice(["Free", "Attached"]),
             random.choice(["Yes", "No"]),
-            # --- MODIFIED LINE: Updated handedness to be more realistic ---
             random.choices(["Right", "Left", "Mixed"], weights=[0.89, 0.10, 0.01])[0]
         ])
     
-    # --- MODIFIED LINE: Changed column name from "Right Handed" ---
     fields = ["S.No", "Name", "Age", "Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     return pd.DataFrame(data, columns=fields)
 
@@ -75,7 +74,6 @@ df = generate_data()
 # ------------------------------
 with st.sidebar:
     st.header("🔬 Filter Controls")
-    # --- MODIFIED LINE: Updated trait options list ---
     trait_options = ["Eye Colour", "Dimples", "Earlobe", "Tongue Roll", "Handedness"]
     selected_trait = st.selectbox("Choose a trait to filter by:", trait_options)
     unique_values = df[selected_trait].unique()
@@ -90,7 +88,6 @@ st.markdown("An interactive dashboard to explore genetic traits across 35 indivi
 # --- QUICK STATS ---
 st.markdown("### 📊 Quick Stats")
 total_individuals = len(df)
-# --- MODIFIED LINE: Updated calculation for right-handedness percentage ---
 right_handed_percentage = (df['Handedness'].value_counts(normalize=True).get('Right', 0)) * 100
 dimples_percentage = (df['Dimples'].value_counts(normalize=True).get('Yes', 0)) * 100
 
