@@ -15,8 +15,28 @@ def load_css():
         animation: aurora 15s ease infinite;
     }
 
-    /* Glassmorphism Effect for containers */
-    [data-testid="stMetric"], [data-testid="stSidebar"], .profile-card, .stTabs, [data-testid="stExpander"] {
+    /* --- THIS IS THE FIX: Added flex properties to stMetric --- */
+    [data-testid="stMetric"] {
+        background: rgba(44, 44, 77, 0.5) !important;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        animation: fadeInUp 0.5s ease-out forwards;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 25px;
+    }
+    /* Adds a small space between the label and the value in the metric card */
+    [data-testid="stMetric"] > div:nth-of-type(1) {
+        margin-bottom: 8px;
+    }
+
+    /* Glassmorphism Effect for other containers */
+    [data-testid="stSidebar"], .profile-card, .stTabs, [data-testid="stExpander"] {
         background: rgba(44, 44, 77, 0.5) !important;
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
