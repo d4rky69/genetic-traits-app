@@ -12,7 +12,7 @@ from utils.pdf_export import add_pdf_export
 st.set_page_config(page_title="Trait Prediction", page_icon="🤖", layout="wide")
 st.title("🤖 Trait Prediction using a Machine Learning Model")
 
-# --- DATA LOADING (Mirrors the logic from Home.py) ---
+# --- DATA LOADING ---
 @st.cache_data
 def generate_demo_data():
     names = [
@@ -53,7 +53,7 @@ for column in df_ml.select_dtypes(include=['object']).columns:
 X = df_ml.drop('Handedness', axis=1)
 y = df_ml['Handedness']
 feature_names = X.columns.tolist()
-if len(df) > 10: # Ensure enough data to split
+if len(df) > 10:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
     model = DecisionTreeClassifier(max_depth=4, random_state=42)
     model.fit(X_train, y_train)
@@ -62,11 +62,9 @@ if len(df) > 10: # Ensure enough data to split
 else:
     accuracy = "N/A (Dataset too small)"
 
-# --- INTERACTIVE PREDICTION & MODEL EXPLANATION ---
-# (The rest of the code for this page is the same as before)
+# --- INTERACTIVE PREDICTION ---
 st.markdown("---")
 st.header("🔮 Make a Prediction")
-# ... (Prediction UI code) ...
 col1, col2, col3 = st.columns(3)
 with col1:
     eye_colour = st.selectbox("Eye Colour:", encoders['Eye Colour'].classes_)
@@ -89,6 +87,7 @@ if st.button("Predict Handedness", type="primary"):
     prediction_decoded = encoders['Handedness'].inverse_transform([prediction_encoded])[0]
     st.success(f"**Predicted Handedness:** {prediction_decoded}")
 
+# --- MODEL EXPLANATION ---
 st.markdown("---")
 st.header("🧠 How the Model Works")
 if isinstance(accuracy, float):
