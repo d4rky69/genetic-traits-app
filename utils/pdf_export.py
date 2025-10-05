@@ -34,7 +34,6 @@ def load_css():
         background-clip: text;
     }
 
-    /* ... rest of your CSS ... */
     /* Aurora animation */
     @keyframes aurora { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
     @keyframes fadeInUp { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
@@ -54,6 +53,38 @@ def load_css():
         border: 1px solid rgba(255,255,255,0.18);
         box-shadow: 0 8px 32px 0 rgba(0,0,0,0.37);
         animation: fadeInUp 0.5s ease-out forwards;
+    }
+
+    /* Tabs horizontal scroll and arrow for overflow */
+    .stTabs {
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        position: relative !important;
+        scrollbar-width: thin;
+        scrollbar-color: #2575FC #222;
+    }
+    .stTabs [data-baseweb="tab"] {
+        min-width: 160px !important;
+        display: inline-block !important;
+    }
+    .stTabs:after {
+        content: "→";
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.8em;
+        color: #ccc;
+        pointer-events: none;
+        z-index: 999;
+    }
+    .stTabs::-webkit-scrollbar {
+        height: 6px;
+        background: #222;
+    }
+    .stTabs::-webkit-scrollbar-thumb {
+        background: #2575FC;
+        border-radius: 4px;
     }
 
     /* Metric Box Alignment */
