@@ -64,8 +64,22 @@ def load_css():
         scrollbar-color: #2575FC #222;
     }
     .stTabs [data-baseweb="tab"] {
-        min-width: 160px !important;
+        min-width: 180px !important;
         display: inline-block !important;
+        vertical-align: middle !important;
+        font-size: 1.08rem !important;
+        padding-left: 18px !important;
+        padding-right: 18px !important;
+        margin-right: 2px !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
+        max-width: 180px !important;
+    }
+    .stTabs [data-baseweb="tab"] span {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: block !important;
     }
     .stTabs:after {
         content: "→";
