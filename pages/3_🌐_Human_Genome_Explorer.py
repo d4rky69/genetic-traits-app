@@ -337,19 +337,20 @@ with tabs[6]:
 
     st.markdown("#### Available Fragments (Click to add in order)")
 
-    fragment_clicked = st.radio(
-        "Select a fragment to add", 
-        st.session_state["assembly_available"], 
-        key="frag_radio", 
-        index=-1,
-        label_visibility="collapsed"
-    )
-
-    if fragment_clicked:
-        st.session_state["assembly_order"].append(fragment_clicked)
-        st.session_state["assembly_available"].remove(fragment_clicked)
-        st.session_state["frag_radio"] = None
-        st.experimental_rerun()
+    options = ["Select a fragment..."] + st.session_state["assembly_available"]
+    if len(options) > 1:
+        fragment_clicked = st.radio(
+            "Select a fragment to add",
+            options,
+            key="frag_radio",
+            index=0,
+            label_visibility="collapsed"
+        )
+        if fragment_clicked != "Select a fragment...":
+            st.session_state["assembly_order"].append(fragment_clicked)
+            st.session_state["assembly_available"].remove(fragment_clicked)
+            st.session_state["frag_radio"] = "Select a fragment..."
+            st.experimental_rerun()
 
     if st.button("Check Assembly"):
         if assembled == full_sequence:
