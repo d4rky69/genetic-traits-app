@@ -13,7 +13,7 @@ st.set_page_config(
 )
 load_css()
 
-# --- Welcome screen with project choices ---
+# --- Centered welcome with big buttons ---
 if "project_choice" not in st.session_state:
     st.session_state["project_choice"] = None
 
@@ -24,31 +24,32 @@ if st.session_state["project_choice"] is None:
             <div style="font-size: 1.23rem; color: #69738b; margin-bottom: 2.5em; text-align:center;">
                 You have two projects available. Please choose one to explore.
             </div>
-            <div style="display: flex; gap: 2em;">
-                <form action="" method="post">
-                    <button name="dominant" type="submit" style="background: #FFD43B; color: #222A3F; font-size: 1.18rem; font-weight: 600; padding: 1em 2.2em; border: none; border-radius: 12px; cursor: pointer;">
-                        Dominant Traits Analyzer &rarr;
-                    </button>
-                </form>
-                <form action="" method="post">
-                    <button name="genome" type="submit" style="background: #B6C7E6; color: #222A3F; font-size: 1.18rem; font-weight: 600; padding: 1em 2.2em; border: none; border-radius: 12px; cursor: pointer;">
-                        Human Genome Explorer &rarr;
-                    </button>
-                </form>
-            </div>
         </div>
     """, unsafe_allow_html=True)
 
-    # Streamlit workaround for button detection in markdown/html
     col1, col2 = st.columns([1,1], gap="large")
     with col1:
-        if st.button("Dominant Traits Analyzer", key="dominant_real", use_container_width=True):
-            st.session_state["project_choice"] = "dominant"
-            st.experimental_rerun()
+        dominant_clicked = st.button(
+            "Dominant Traits Analyzer →",
+            key="dominant_real",
+            use_container_width=True,
+            help="Explore the full dashboard"
+        )
     with col2:
-        if st.button("Human Genome Explorer", key="genome_real", use_container_width=True):
-            st.session_state["project_choice"] = "genome"
-            st.experimental_rerun()
+        genome_clicked = st.button(
+            "Human Genome Explorer →",
+            key="genome_real",
+            use_container_width=True,
+            help="Explore only the Human Genome page"
+        )
+
+    # When a button is tapped, update session state and rerun
+    if dominant_clicked:
+        st.session_state["project_choice"] = "dominant"
+        st.experimental_rerun()
+    elif genome_clicked:
+        st.session_state["project_choice"] = "genome"
+        st.experimental_rerun()
 
 # --- If Human Genome Explorer chosen, jump to page 3 ---
 elif st.session_state["project_choice"] == "genome":
@@ -56,7 +57,6 @@ elif st.session_state["project_choice"] == "genome":
 
 # --- If Dominant Traits Analyzer chosen, show homepage dashboard code as before ---
 elif st.session_state["project_choice"] == "dominant":
-    # (This is your original Home.py code, with no changes needed)
     @st.cache_data
     def generate_demo_data():
         names = ["Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja",
