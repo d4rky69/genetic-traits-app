@@ -41,7 +41,11 @@ elif st.session_state["project_choice"] == "genome":
     st.switch_page("pages/3_🌐_Human_Genome_Explorer.py")
 
 elif st.session_state["project_choice"] == "dominant":
-    # (Insert your dashboard code here, as previously)
+    # --- Back to Home button ---
+    if st.button("🏠 Back to Home", key="back_home", use_container_width=True):
+        st.session_state["project_choice"] = None
+        st.experimental_rerun()
+
     @st.cache_data
     def generate_demo_data():
         names = ["Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja",
