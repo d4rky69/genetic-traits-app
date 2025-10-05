@@ -6,9 +6,6 @@ from utils.pdf_export import add_pdf_export, load_css
 st.set_page_config(page_title="Human Genome Explorer", page_icon="🌐", layout="wide")
 load_css()
 
-# ---- Custom CSS for Tabs Overflow ----
-# This is already in utils/pdf_export.py, so you don't need to repeat here
-
 # --- Back to Home button ---
 if st.button("🏠 Back to Home", key="back_home_genome", use_container_width=True):
     st.session_state["project_choice"] = None
@@ -339,12 +336,15 @@ with tabs[6]:
     st.code(assembled if assembled else "No fragments selected.")
 
     st.markdown("#### Available Fragments (Click to add in order)")
+    clicked = None
     cols = st.columns(len(st.session_state["assembly_available"]))
     for i, frag in enumerate(st.session_state["assembly_available"]):
         if cols[i].button(frag, key=f"frag_{frag}_{i}"):
-            st.session_state["assembly_order"].append(frag)
-            st.session_state["assembly_available"].pop(i)
-            st.experimental_rerun()
+            clicked = i
+    if clicked is not None:
+        st.session_state["assembly_order"].append(st.session_state["assembly_available"][clicked])
+        st.session_state["assembly_available"].pop(clicked)
+        st.experimental_rerun()
 
     if st.button("Check Assembly"):
         if assembled == full_sequence:
