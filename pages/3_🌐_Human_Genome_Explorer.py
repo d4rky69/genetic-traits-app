@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import numpy as np
 from utils.pdf_export import add_pdf_export, load_css
 
 st.set_page_config(page_title="Human Genome Explorer", page_icon="🌐", layout="wide")
@@ -17,7 +18,10 @@ tabs = st.tabs([
     "🏠 Homepage",
     "🧬 Trait Analyzer",
     "🧪 Mutation Simulator",
-    "🗺️ Chromosome Map",
+    "🗺️ Chromosome Map (Basic)",
+    "🗺️ Chromosome Map (Advanced)",
+    "🧬 Genetic Algorithm Explorer",
+    "🧩 Genome Assembly Challenge",
     "ℹ️ About"
 ])
 
@@ -47,7 +51,7 @@ with tabs[1]:
     trait_db = {
         "Eye Color": {
             "Brown": {"type": "Dominant", "gene": "OCA2", "chromosome": 15, "explanation": "Brown eyes are dominant. The OCA2 gene on chromosome 15 controls melanin production in the iris."},
-            "Blue": {"type": "Recessive", "gene": "OCA2 (variant)", "chromosome": 15, "explanation": "Blue eyes are recessive. They result from a variant in the OCA2 gene decreasing melanin in the iris."},
+            "Blue": {"type": "Recessive", "gene": "OCA2 (variant)", "chromosome": 15, "explanation": "Blue eyes are recessive. They result from a variant in the OCA2 gene decreasing melanin in the iri[...]},
             "Black": {"type": "Dominant", "gene": "OCA2", "chromosome": 15, "explanation": "Black eyes are dominant. OCA2 gene controls this pigment."}
         },
         "Blood Type": {
@@ -112,7 +116,7 @@ with tabs[2]:
         else:
             st.error(mutated)
 
-# --- Tab 4: Chromosome Map ---
+# --- Tab 4: Chromosome Map (Basic) ---
 with tabs[3]:
     st.header("🗺️ Chromosome Map (Simplified)")
     st.markdown("Click a chromosome to see example genes and their functions.")
@@ -139,8 +143,217 @@ with tabs[3]:
     for g in chromo_map[chromo]:
         st.markdown(f"- **{g['gene']}**: {g['function']}")
 
-# --- Tab 5: About Page ---
+# --- Tab 5: Chromosome Map (Advanced) ---
 with tabs[4]:
+    st.header("🗺️ Simplified Chromosome Map")
+    st.markdown("An interactive map of selected human chromosomes. Select a chromosome to discover key genes and their functions.")
+    advanced_chromosomes = {
+        "Chromosome 1 (~2,000 Genes)": {
+            "summary": "Largest human chromosome. Contains many important genes related to development and disease.",
+            "genes": [
+                {"name": "MTHFR", "desc": "Methylenetetrahydrofolate reductase (folate metabolism)", "locus": "1p36.22"},
+                {"name": "F5", "desc": "Coagulation factor V (blood clotting)", "locus": "1q23"}
+            ]
+        },
+        "Chromosome 4 (~750 Genes)": {
+            "summary": "Contains genes involved in skeletal development and immunity.",
+            "genes": [
+                {"name": "FGFR3", "desc": "Fibroblast growth factor receptor 3 (bone growth)", "locus": "4p16.3"}
+            ]
+        },
+        "Chromosome 6 (~1,000 Genes)": {
+            "summary": "Important for immune system function (HLA region).",
+            "genes": [
+                {"name": "HLA-A", "desc": "Major histocompatibility complex, class I, A", "locus": "6p21.3"}
+            ]
+        },
+        "Chromosome 7 (~1,150 Genes)": {
+            "summary": "One of the 23 pairs of chromosomes in humans. It spans about 159 million base pairs and represents over 5% of the total DNA in cells.",
+            "genes": [
+                {"name": "CFTR", "desc": "Provides instructions for making a protein called the cystic fibrosis transmembrane conductance regulator. Mutations in this gene cause Cystic Fibrosis.", "locus": "7q31.2"},
+                {"name": "EGFR", "desc": "Epidermal growth factor receptor, a gene that can turn into an oncogene when mutated, and is associated with multiple cancers.", "locus": "7p12"}
+            ]
+        },
+        "Chromosome 11 (~1,300 Genes)": {
+            "summary": "Contains genes involved in hemoglobin and insulin production.",
+            "genes": [
+                {"name": "HBB", "desc": "Hemoglobin beta (Sickle cell anemia)", "locus": "11p15.4"},
+                {"name": "INS", "desc": "Insulin (blood sugar regulation)", "locus": "11p15.5"}
+            ]
+        },
+        "Chromosome 12 (~1,050 Genes)": {
+            "summary": "Genes related to metabolism and immunity.",
+            "genes": [
+                {"name": "VDR", "desc": "Vitamin D receptor", "locus": "12q13.11"}
+            ]
+        },
+        "Chromosome 15 (~600 Genes)": {
+            "summary": "Genes controlling eye color, connective tissue.",
+            "genes": [
+                {"name": "OCA2", "desc": "Eye color", "locus": "15q12"},
+                {"name": "FBN1", "desc": "Connective tissue (Marfan syndrome)", "locus": "15q21.1"}
+            ]
+        },
+        "Chromosome 17 (~1,200 Genes)": {
+            "summary": "Genes related to cancer and neurological disorders.",
+            "genes": [
+                {"name": "TP53", "desc": "Tumor protein p53", "locus": "17p13.1"}
+            ]
+        },
+        "Chromosome 19 (~1,500 Genes)": {
+            "summary": "Genes involved in cholesterol metabolism and Alzheimer’s risk.",
+            "genes": [
+                {"name": "APOE", "desc": "Alzheimer’s risk", "locus": "19q13.32"},
+                {"name": "LDLR", "desc": "Cholesterol metabolism", "locus": "19p13.2"}
+            ]
+        },
+        "Chromosome 21 (~200-300 Genes)": {
+            "summary": "Smallest autosome, contains genes related to Down syndrome.",
+            "genes": [
+                {"name": "APP", "desc": "Amyloid precursor protein", "locus": "21q21.3"}
+            ]
+        },
+        "Chromosome 22 (~500 Genes)": {
+            "summary": "Genes linked to immune system and growth.",
+            "genes": [
+                {"name": "COMT", "desc": "Catechol-O-methyltransferase (dopamine metabolism)", "locus": "22q11.21"}
+            ]
+        }
+    }
+
+    chromo_choice = st.selectbox("Select Chromosome", list(advanced_chromosomes.keys()))
+    chromo_info = advanced_chromosomes[chromo_choice]
+    st.markdown(f"""
+        <div style="background: #f9f3ff; border-radius: 12px; padding: 1.2em; margin-bottom:1em;">
+            <b style="font-size:1.3em;">{chromo_choice.split('(')[0]}</b>
+            <br>{chromo_info['summary']}
+        </div>
+    """, unsafe_allow_html=True)
+    st.subheader("Notable Genes:")
+    for gene in chromo_info["genes"]:
+        st.markdown(f"""
+            <div style="background: #e3f1fc; border-radius: 10px; padding: 0.8em; margin-bottom:0.5em;">
+                <b style="color:#2575FC; font-size:1.1em;">{gene['name']}</b>
+                <span style="float:right; color:#69738b;">{gene['locus']}</span>
+                <br>{gene['desc']}
+            </div>
+        """, unsafe_allow_html=True)
+
+# --- Tab 6: Genetic Algorithm Explorer ---
+with tabs[5]:
+    st.header("🧬 Genetic Algorithm Explorer")
+    st.markdown("Simulate natural selection by setting parameters and evolving a population of DNA sequences towards a target.")
+
+    def fitness(seq, target):
+        return sum(a == b for a, b in zip(seq, target)) / len(target)
+
+    def evolve(target, pop_size, mutation_rate, max_gens):
+        population = [''.join(random.choices('ATCG', k=len(target))) for _ in range(pop_size)]
+        best_seq = ""
+        best_fit = 0
+        generations = 0
+        for g in range(max_gens):
+            fitnesses = [fitness(seq, target) for seq in population]
+            best_idx = np.argmax(fitnesses)
+            if fitnesses[best_idx] > best_fit:
+                best_fit = fitnesses[best_idx]
+                best_seq = population[best_idx]
+            if best_fit == 1.0:
+                generations = g + 1
+                break
+            # Selection
+            selected = random.choices(population, weights=fitnesses, k=pop_size)
+            # Crossover & Mutation
+            new_pop = []
+            for i in range(pop_size):
+                parent = selected[random.randint(0, pop_size-1)]
+                child = list(parent)
+                # Mutation
+                for j in range(len(child)):
+                    if random.random() < mutation_rate:
+                        child[j] = random.choice('ATCG')
+                new_pop.append(''.join(child))
+            population = new_pop
+        else:
+            generations = max_gens
+        return best_seq, best_fit, generations
+
+    with st.form("ga_form"):
+        target_seq = st.text_input("Target DNA Sequence (A, T, C, G)", value="ATGC")
+        pop_size = st.slider("Population Size", min_value=10, max_value=200, value=100)
+        mutation_rate = st.slider("Mutation Rate", min_value=0.001, max_value=0.1, value=0.01, step=0.001)
+        max_gens = st.slider("Max Generations", min_value=10, max_value=500, value=100)
+        submitted = st.form_submit_button("Run Simulation", type="primary")
+    if submitted:
+        with st.spinner("Running genetic algorithm..."):
+            best_seq, best_fit, gens = evolve(target_seq, pop_size, mutation_rate, max_gens)
+            st.success(f"Simulation Complete. Evolved over {gens} generations.")
+            st.markdown("### Simulation Results")
+            st.progress(best_fit)
+            st.metric("Best Fitness Achieved", f"{best_fit*100:.2f}%")
+            st.markdown(f"**Target Sequence:** `{target_seq}`")
+            st.markdown(f"**Best Evolved Sequence:** `{best_seq}`")
+            if best_fit == 1.0:
+                st.info("Target sequence perfectly matched!", icon="✅")
+            else:
+                st.warning("Target sequence not fully matched.", icon="⚠️")
+
+# --- Tab 7: Genome Assembly Challenge ---
+with tabs[6]:
+    st.header("🧩 Genome Assembly Challenge")
+    st.markdown("Reconstruct the original DNA sequence by correctly ordering the overlapping fragments below.")
+
+    # Challenge parameters
+    full_sequence = "CGATTATGCGGTAC"
+    fragments = ["CGATT", "ATGCG", "CGTAC", "TTACG"]  # Overlapping fragments
+
+    if "assembly_order" not in st.session_state:
+        st.session_state["assembly_order"] = []
+
+    if "fragments" not in st.session_state:
+        st.session_state["fragments"] = fragments.copy()
+
+    def reset_assembly():
+        st.session_state["assembly_order"] = []
+        st.session_state["fragments"] = fragments.copy()
+
+    def hint_assembly():
+        # Provide the next correct fragment
+        correct = []
+        seq = full_sequence
+        for frag in fragments:
+            if seq.startswith(frag):
+                correct.append(frag)
+                seq = seq[len(frag):]
+        if correct:
+            st.info(f"Try starting with: {correct[0]}")
+        else:
+            st.info("Try looking for overlapping ends.")
+
+    st.button("Reset / Shuffle", on_click=reset_assembly)
+    st.button("Hint", on_click=hint_assembly)
+    st.markdown("#### Your Assembled Sequence")
+    st.markdown("Click fragments below to start assembling.")
+
+    assembled = "".join(st.session_state["assembly_order"])
+    st.code(assembled if assembled else "No fragments selected.")
+
+    st.markdown("#### Available Fragments")
+    cols = st.columns(len(st.session_state["fragments"]))
+    for i, frag in enumerate(st.session_state["fragments"]):
+        if cols[i].button(frag, key=f"frag_{frag}_{i}"):
+            st.session_state["assembly_order"].append(frag)
+            st.session_state["fragments"].pop(i)
+            st.experimental_rerun()
+
+    if st.button("Check Assembly"):
+        if assembled == full_sequence:
+            st.success("Correct! Sequence assembled.")
+        else:
+            st.error("Incorrect assembly. Try again or use a hint.")
+
+# --- Tab 8: About Page ---
+with tabs[7]:
     st.header("ℹ️ About the Human Genome Project")
     st.markdown("""
     **Timeline:**  
