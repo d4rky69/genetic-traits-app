@@ -13,7 +13,6 @@ st.set_page_config(
 )
 load_css()
 
-# --- Centered welcome with big buttons ---
 if "project_choice" not in st.session_state:
     st.session_state["project_choice"] = None
 
@@ -29,34 +28,20 @@ if st.session_state["project_choice"] is None:
 
     col1, col2 = st.columns([1,1], gap="large")
     with col1:
-        dominant_clicked = st.button(
-            "Dominant Traits Analyzer →",
-            key="dominant_real",
-            use_container_width=True,
-            help="Explore the full dashboard"
-        )
+        dominant_clicked = st.button("Dominant Traits Analyzer →", key="dominant_real", use_container_width=True)
     with col2:
-        genome_clicked = st.button(
-            "Human Genome Explorer →",
-            key="genome_real",
-            use_container_width=True,
-            help="Explore only the Human Genome page"
-        )
+        genome_clicked = st.button("Human Genome Explorer →", key="genome_real", use_container_width=True)
 
-    # When a button is tapped, update session state and rerun
     if dominant_clicked:
         st.session_state["project_choice"] = "dominant"
-        st.experimental_rerun()
     elif genome_clicked:
         st.session_state["project_choice"] = "genome"
-        st.experimental_rerun()
 
-# --- If Human Genome Explorer chosen, jump to page 3 ---
 elif st.session_state["project_choice"] == "genome":
     st.switch_page("pages/3_🌐_Human_Genome_Explorer.py")
 
-# --- If Dominant Traits Analyzer chosen, show homepage dashboard code as before ---
 elif st.session_state["project_choice"] == "dominant":
+    # (Insert your dashboard code here, as previously)
     @st.cache_data
     def generate_demo_data():
         names = ["Shreyas", "Arnab", "Aditya", "Arjun", "Krishna", "Rohan", "Ishaan", "Kunal", "Sanya", "Ananya", "Priya", "Kavya", "Ritika", "Nisha", "Meera", "Divya", "Rahul", "Amit", "Sneha", "Pooja",
