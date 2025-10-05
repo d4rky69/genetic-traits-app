@@ -51,7 +51,7 @@ with tabs[1]:
     trait_db = {
         "Eye Color": {
             "Brown": {"type": "Dominant", "gene": "OCA2", "chromosome": 15, "explanation": "Brown eyes are dominant. The OCA2 gene on chromosome 15 controls melanin production in the iris."},
-            "Blue": {"type": "Recessive", "gene": "OCA2 (variant)", "chromosome": 15, "explanation": "Blue eyes are recessive. They result from a variant in the OCA2 gene decreasing melanin in the iri[...]},
+            "Blue": {"type": "Recessive", "gene": "OCA2 (variant)", "chromosome": 15, "explanation": "Blue eyes are recessive. They result from a variant in the OCA2 gene decreasing melanin in the iris."},
             "Black": {"type": "Dominant", "gene": "OCA2", "chromosome": 15, "explanation": "Black eyes are dominant. OCA2 gene controls this pigment."}
         },
         "Blood Type": {
@@ -85,7 +85,6 @@ with tabs[2]:
     st.header("🧪 Mutation Simulator")
     st.markdown("Enter a short DNA sequence (e.g., `ATCGGA`). The simulator will apply a random mutation.")
     dna_input = st.text_input("DNA Sequence (A, T, C, G only)", "")
-    mutation_result = ""
     if st.button("Simulate Mutation"):
         def mutate(seq):
             if not seq or any(c not in "ATCG" for c in seq.upper()):
@@ -110,7 +109,6 @@ with tabs[2]:
             st.markdown(f"**Original DNA:** `{dna_input}`")
             st.markdown(f"**Mutation Type:** {explanation}")
             st.markdown(f"**Mutated DNA:** `{mutated}`")
-            # Example: sickle cell mutation
             if "deletion" in explanation or "substitution" in explanation:
                 st.info("Example: A substitution mutation in the **HBB** gene (chromosome 11) can cause Sickle Cell Anemia by changing one amino acid in hemoglobin.")
         else:
@@ -261,14 +259,11 @@ with tabs[5]:
             if best_fit == 1.0:
                 generations = g + 1
                 break
-            # Selection
             selected = random.choices(population, weights=fitnesses, k=pop_size)
-            # Crossover & Mutation
             new_pop = []
             for i in range(pop_size):
                 parent = selected[random.randint(0, pop_size-1)]
                 child = list(parent)
-                # Mutation
                 for j in range(len(child)):
                     if random.random() < mutation_rate:
                         child[j] = random.choice('ATCG')
@@ -303,9 +298,8 @@ with tabs[6]:
     st.header("🧩 Genome Assembly Challenge")
     st.markdown("Reconstruct the original DNA sequence by correctly ordering the overlapping fragments below.")
 
-    # Challenge parameters
     full_sequence = "CGATTATGCGGTAC"
-    fragments = ["CGATT", "ATGCG", "CGTAC", "TTACG"]  # Overlapping fragments
+    fragments = ["CGATT", "ATGCG", "CGTAC", "TTACG"]
 
     if "assembly_order" not in st.session_state:
         st.session_state["assembly_order"] = []
@@ -318,17 +312,12 @@ with tabs[6]:
         st.session_state["fragments"] = fragments.copy()
 
     def hint_assembly():
-        # Provide the next correct fragment
-        correct = []
-        seq = full_sequence
+        # Provide a basic hint: show one fragment that is correct as first
         for frag in fragments:
-            if seq.startswith(frag):
-                correct.append(frag)
-                seq = seq[len(frag):]
-        if correct:
-            st.info(f"Try starting with: {correct[0]}")
-        else:
-            st.info("Try looking for overlapping ends.")
+            if full_sequence.startswith(frag):
+                st.info(f"Try starting with: {frag}")
+                return
+        st.info("Try looking for overlapping ends.")
 
     st.button("Reset / Shuffle", on_click=reset_assembly)
     st.button("Hint", on_click=hint_assembly)
