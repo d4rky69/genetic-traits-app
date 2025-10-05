@@ -6,6 +6,32 @@ from utils.pdf_export import add_pdf_export, load_css
 st.set_page_config(page_title="Human Genome Explorer", page_icon="🌐", layout="wide")
 load_css()
 
+# ---- Custom CSS for Tabs Overflow ----
+st.markdown("""
+<style>
+.stTabs {
+    overflow-x: auto !important;
+    white-space: nowrap !important;
+    position: relative !important;
+}
+.stTabs [data-baseweb="tab"] {
+    min-width: 160px !important;
+    display: inline-block !important;
+}
+.stTabs:after {
+    content: "→";
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.8em;
+    color: #ccc;
+    pointer-events: none;
+    z-index: 999;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # --- Back to Home button ---
 if st.button("🏠 Back to Home", key="back_home_genome", use_container_width=True):
     st.session_state["project_choice"] = None
@@ -43,6 +69,7 @@ with tabs[0]:
     - Supports research into genetic diseases.
     - Lays the foundation for modern genetics, gene therapy, and precision healthcare.
     """)
+    st.info("Tip: If tabs overflow, scroll right →", icon="➡️")
 
 # --- Tab 2: Trait Analyzer ---
 with tabs[1]:
@@ -298,48 +325,63 @@ with tabs[6]:
     st.header("🧩 Genome Assembly Challenge")
     st.markdown("Reconstruct the original DNA sequence by correctly ordering the overlapping fragments below.")
 
+    # Set up the challenge
     full_sequence = "CGATTATGCGGTAC"
-    fragments = ["CGATT", "ATGCG", "CGTAC", "TTACG"]
+    # These fragments overlap: CGATT overlaps with ATGCG at "AT", ATGCG overlaps with CGTAC at "CG", etc.
+    fragments = ["CGATT", "ATGCG", "CGGTAC", "TATGCG"]
 
     if "assembly_order" not in st.session_state:
         st.session_state["assembly_order"] = []
 
-    if "fragments" not in st.session_state:
-        st.session_state["fragments"] = fragments.copy()
+    if "assembly_available" not in st.session_state:
+        st.session_state["assembly_available"] = fragments.copy()
 
     def reset_assembly():
         st.session_state["assembly_order"] = []
-        st.session_state["fragments"] = fragments.copy()
+        st.session_state["assembly_available"] = fragments.copy()
 
-    def hint_assembly():
-        # Provide a basic hint: show one fragment that is correct as first
-        for frag in fragments:
-            if full_sequence.startswith(frag):
-                st.info(f"Try starting with: {frag}")
-                return
-        st.info("Try looking for overlapping ends.")
+    def get_overlap(a, b):
+        # Return the length of the maximum overlap between end of a and start of b
+        max_olap = 0
+        for i in range(1, min(len(a), len(b))):
+            if a[-i:] == b[:i]:
+                max_olap = i
+        return max_olap
+
+    def assemble_fragments(order):
+        if not order:
+            return ""
+        result = order[0]
+        for frag in order[1:]:
+            olap = get_overlap(result, frag)
+            result += frag[olap:]
+        return result
 
     st.button("Reset / Shuffle", on_click=reset_assembly)
-    st.button("Hint", on_click=hint_assembly)
     st.markdown("#### Your Assembled Sequence")
-    st.markdown("Click fragments below to start assembling.")
-
-    assembled = "".join(st.session_state["assembly_order"])
+    assembled = assemble_fragments(st.session_state["assembly_order"])
     st.code(assembled if assembled else "No fragments selected.")
 
-    st.markdown("#### Available Fragments")
-    cols = st.columns(len(st.session_state["fragments"]))
-    for i, frag in enumerate(st.session_state["fragments"]):
+    st.markdown("#### Available Fragments (Click to add in order)")
+    cols = st.columns(len(st.session_state["assembly_available"]))
+    for i, frag in enumerate(st.session_state["assembly_available"]):
         if cols[i].button(frag, key=f"frag_{frag}_{i}"):
             st.session_state["assembly_order"].append(frag)
-            st.session_state["fragments"].pop(i)
+            st.session_state["assembly_available"].pop(i)
             st.experimental_rerun()
 
     if st.button("Check Assembly"):
         if assembled == full_sequence:
             st.success("Correct! Sequence assembled.")
         else:
-            st.error("Incorrect assembly. Try again or use a hint.")
+            st.error("Incorrect assembly. Try again or use Reset.")
+
+    if st.button("Hint"):
+        # Find the fragment that should start the assembly
+        for frag in fragments:
+            if full_sequence.startswith(frag):
+                st.info(f"Try starting with: {frag}")
+                break
 
 # --- Tab 8: About Page ---
 with tabs[7]:
