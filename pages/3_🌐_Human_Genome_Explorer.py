@@ -302,7 +302,7 @@ with tabs[6]:
     st.markdown("Reconstruct the original DNA sequence by correctly ordering the overlapping fragments below.")
 
     full_sequence = "CGATTATGCGGTAC"
-    fragments = ["CGATT", "TATGCG", "ATGCG", "CGGTAC"]
+    fragments = ["CGATT", "ATGCG", "CGGTAC", "TATGCG"]
 
     if "assembly_order" not in st.session_state:
         st.session_state["assembly_order"] = []
@@ -336,14 +336,19 @@ with tabs[6]:
     st.code(assembled if assembled else "No fragments selected.")
 
     st.markdown("#### Available Fragments (Click to add in order)")
-    clicked = None
-    cols = st.columns(len(st.session_state["assembly_available"]))
-    for i, frag in enumerate(st.session_state["assembly_available"]):
-        if cols[i].button(frag, key=f"frag_{frag}_{i}"):
-            clicked = i
-    if clicked is not None:
-        st.session_state["assembly_order"].append(st.session_state["assembly_available"][clicked])
-        st.session_state["assembly_available"].pop(clicked)
+
+    fragment_clicked = st.radio(
+        "Select a fragment to add", 
+        st.session_state["assembly_available"], 
+        key="frag_radio", 
+        index=-1,
+        label_visibility="collapsed"
+    )
+
+    if fragment_clicked:
+        st.session_state["assembly_order"].append(fragment_clicked)
+        st.session_state["assembly_available"].remove(fragment_clicked)
+        st.session_state["frag_radio"] = None
         st.experimental_rerun()
 
     if st.button("Check Assembly"):
