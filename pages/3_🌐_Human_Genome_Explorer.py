@@ -5,6 +5,11 @@ from utils.pdf_export import add_pdf_export, load_css
 st.set_page_config(page_title="Human Genome Explorer", page_icon="🌐", layout="wide")
 load_css()
 
+# --- Back to Home button ---
+if st.button("🏠 Back to Home", key="back_home_genome", use_container_width=True):
+    st.session_state["project_choice"] = None
+    st.switch_page("Home.py")
+
 st.title("🔬 Human Genome Project Interactive Portal")
 st.markdown("An educational and interactive website to explore the Human Genome Project, genetic traits, mutations, and chromosome maps.")
 
@@ -42,7 +47,8 @@ with tabs[1]:
     trait_db = {
         "Eye Color": {
             "Brown": {"type": "Dominant", "gene": "OCA2", "chromosome": 15, "explanation": "Brown eyes are dominant. The OCA2 gene on chromosome 15 controls melanin production in the iris."},
-            "Blue": {"type": "Recessive", "gene": "OCA2 (variant)", "chromosome": 15, "explanation": "Blue eyes are recessive. They result from a variant in the OCA2 gene decreasing melanin in the iris."}
+            "Blue": {"type": "Recessive", "gene": "OCA2 (variant)", "chromosome": 15, "explanation": "Blue eyes are recessive. They result from a variant in the OCA2 gene decreasing melanin in the iris."},
+            "Black": {"type": "Dominant", "gene": "OCA2", "chromosome": 15, "explanation": "Black eyes are dominant. OCA2 gene controls this pigment."}
         },
         "Blood Type": {
             "Type A": {"type": "Dominant", "gene": "ABO", "chromosome": 9, "explanation": "A blood type is dominant over O. The ABO gene on chromosome 9 determines blood group."},
