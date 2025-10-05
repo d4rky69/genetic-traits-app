@@ -101,6 +101,51 @@ def load_css():
         border-radius: 4px;
     }
 
+    /* --- Custom styles for chromosome info box --- */
+    .chromosome-info-box {
+        background: #2d2355 !important;
+        color: #d6e3fa !important;
+        border-radius: 12px !important;
+        padding: 1.2em !important;
+        margin-bottom: 1em !important;
+        font-size: 1.07em !important;
+        border: 1px solid #343078 !important;
+    }
+    .chromosome-info-box b {
+        color: #f3c86b !important;
+        font-size: 1.2em !important;
+    }
+    .chromosome-info-box .chromosome-desc {
+        color: #b5bedc !important;
+        font-size: 1em !important;
+        font-weight: 400 !important;
+        margin-top: 0.25em !important;
+    }
+
+    /* Gene cards in advanced map -- better contrast */
+    .gene-card {
+        background: #243e5c !important;
+        color: #d6e3fa !important;
+        border-radius: 10px !important;
+        padding: 0.8em !important;
+        margin-bottom: 0.5em !important;
+        font-size: 1em !important;
+        border: 1px solid #2d5a8d !important;
+    }
+    .gene-card b {
+        color: #49c1ff !important;
+        font-size: 1.1em !important;
+    }
+    .gene-card .gene-locus {
+        float: right !important;
+        color: #e9d68f !important;
+        font-size: 0.95em !important;
+    }
+    .gene-card .gene-desc {
+        color: #b5bedc !important;
+        font-size: 0.98em !important;
+    }
+
     /* Metric Box Alignment */
     [data-testid="stMetric"] {
         min-height: 110px;
