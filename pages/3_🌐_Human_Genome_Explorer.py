@@ -327,8 +327,8 @@ with tabs[6]:
 
     # Set up the challenge
     full_sequence = "CGATTATGCGGTAC"
-    # These fragments overlap: CGATT overlaps with ATGCG at "AT", ATGCG overlaps with CGTAC at "CG", etc.
-    fragments = ["CGATT", "ATGCG", "CGGTAC", "TATGCG"]
+    # These fragments overlap: CGATT overlaps with TATGCG at "TAT", TATGCG overlaps with ATGCG at "ATGCG", ATGCG overlaps with CGGTAC at "CGG", etc.
+    fragments = ["CGATT", "TATGCG", "ATGCG", "CGGTAC"]
 
     if "assembly_order" not in st.session_state:
         st.session_state["assembly_order"] = []
@@ -341,7 +341,6 @@ with tabs[6]:
         st.session_state["assembly_available"] = fragments.copy()
 
     def get_overlap(a, b):
-        # Return the length of the maximum overlap between end of a and start of b
         max_olap = 0
         for i in range(1, min(len(a), len(b))):
             if a[-i:] == b[:i]:
