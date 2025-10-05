@@ -7,30 +7,7 @@ st.set_page_config(page_title="Human Genome Explorer", page_icon="🌐", layout=
 load_css()
 
 # ---- Custom CSS for Tabs Overflow ----
-st.markdown("""
-<style>
-.stTabs {
-    overflow-x: auto !important;
-    white-space: nowrap !important;
-    position: relative !important;
-}
-.stTabs [data-baseweb="tab"] {
-    min-width: 160px !important;
-    display: inline-block !important;
-}
-.stTabs:after {
-    content: "→";
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 1.8em;
-    color: #ccc;
-    pointer-events: none;
-    z-index: 999;
-}
-</style>
-""", unsafe_allow_html=True)
+# This is already in utils/pdf_export.py, so you don't need to repeat here
 
 # --- Back to Home button ---
 if st.button("🏠 Back to Home", key="back_home_genome", use_container_width=True):
@@ -172,6 +149,7 @@ with tabs[3]:
 with tabs[4]:
     st.header("🗺️ Simplified Chromosome Map")
     st.markdown("An interactive map of selected human chromosomes. Select a chromosome to discover key genes and their functions.")
+
     advanced_chromosomes = {
         "Chromosome 1 (~2,000 Genes)": {
             "summary": "Largest human chromosome. Contains many important genes related to development and disease.",
@@ -248,21 +226,22 @@ with tabs[4]:
 
     chromo_choice = st.selectbox("Select Chromosome", list(advanced_chromosomes.keys()))
     chromo_info = advanced_chromosomes[chromo_choice]
-    st.markdown(f"""
-        <div style="background: #f9f3ff; border-radius: 12px; padding: 1.2em; margin-bottom:1em;">
-            <b style="font-size:1.3em;">{chromo_choice.split('(')[0]}</b>
-            <br>{chromo_info['summary']}
+    st.markdown(f'''
+        <div class="chromosome-info-box">
+            <b>{chromo_choice.split("(")[0].strip()}</b>
+            <div class="chromosome-desc">{chromo_info['summary']}</div>
         </div>
-    """, unsafe_allow_html=True)
+    ''', unsafe_allow_html=True)
+
     st.subheader("Notable Genes:")
     for gene in chromo_info["genes"]:
-        st.markdown(f"""
-            <div style="background: #e3f1fc; border-radius: 10px; padding: 0.8em; margin-bottom:0.5em;">
-                <b style="color:#2575FC; font-size:1.1em;">{gene['name']}</b>
-                <span style="float:right; color:#69738b;">{gene['locus']}</span>
-                <br>{gene['desc']}
+        st.markdown(f'''
+            <div class="gene-card">
+                <b>{gene["name"]}</b>
+                <span class="gene-locus">{gene["locus"]}</span>
+                <div class="gene-desc">{gene["desc"]}</div>
             </div>
-        """, unsafe_allow_html=True)
+        ''', unsafe_allow_html=True)
 
 # --- Tab 6: Genetic Algorithm Explorer ---
 with tabs[5]:
@@ -325,9 +304,7 @@ with tabs[6]:
     st.header("🧩 Genome Assembly Challenge")
     st.markdown("Reconstruct the original DNA sequence by correctly ordering the overlapping fragments below.")
 
-    # Set up the challenge
     full_sequence = "CGATTATGCGGTAC"
-    # These fragments overlap: CGATT overlaps with TATGCG at "TAT", TATGCG overlaps with ATGCG at "ATGCG", ATGCG overlaps with CGGTAC at "CGG", etc.
     fragments = ["CGATT", "TATGCG", "ATGCG", "CGGTAC"]
 
     if "assembly_order" not in st.session_state:
@@ -376,7 +353,6 @@ with tabs[6]:
             st.error("Incorrect assembly. Try again or use Reset.")
 
     if st.button("Hint"):
-        # Find the fragment that should start the assembly
         for frag in fragments:
             if full_sequence.startswith(frag):
                 st.info(f"Try starting with: {frag}")
